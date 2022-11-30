@@ -1,4 +1,4 @@
-import { Сharacter} from './character';
+import { Сharacter } from './character';
 
 class Warrior extends Сharacter {
 
@@ -6,32 +6,37 @@ class Warrior extends Сharacter {
         super();
         this.HP = 200;
         this.maxHP = 200;
+        this.damage = 50;
         this.class = "Warrior";
+        this.attackName = "Sword Strike";
+        this.abilityName = "Defense";
     }
 
-    swordStrike(enemy: any): void {
+    // attack(enemy: any): number {
+
+    //     if (this.HP === 0) {
+    //         throw new Error('You are dead, if you want to continue the fight, first relive!');
+    //     }
+
+    //     if (enemy.HP <= 0) {
+    //         throw new Error('Your opponent is already dead, you can attack another!');
+    //     }
+
+    //     if (((enemy.HP - this.damage) < 0)) {
+    //         return enemy.HP = 0;
+    //     }
+
+    //     return enemy.HP -= this.damage;
+
+    // }
+
+    ability(): void {
+
         if (this.HP === 0) {
-            console.log('You are dead, if you want to continue the fight, first relive!');
-        } else {
-            if (enemy.HP === 0) {
-                console.log('Your opponent is already dead, you can attack another!');
-            } else {
-                if(((enemy.HP - 50) < 0)){
-                    enemy.HP = 0;
-                }else{
-                    enemy.HP -= 50;
-                }
-            }
+            throw new Error('You are dead, if you want to continue the fight, first relive!');
         }
+
     }
+}
 
-    defense(): void {
-        if (this.HP === 0) {
-            console.log('You are dead, if you want to continue the fight, first relive!');
-        } else {
-
-        }
-    }
-} 
-
-export {Warrior};
+export { Warrior };
