@@ -1,0 +1,24 @@
+{
+  "name": "studentsproject",
+  "version": "1.0.0",
+  "description": "Repository for the implementation of the project described in the [technical task](https://docs.google.com/document/d/1smlvEuArov1OVh3S1IOfy0A-nXYQb2F3TohCUPteiMI/edit?usp=sharing).",
+  "main": "build/app.js",
+  "scripts": {
+    "start": "tsc && node build/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VladyslavKukharchuk/StudentsProject.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VladyslavKukharchuk/StudentsProject/issues"
+  },
+  "homepage": "https://github.com/VladyslavKukharchuk/StudentsProject#readme",
+  "devDependencies": {
+    "@types/node": "^18.11.9",
+    "typescript": "^4.9.3"
+  }
+}
