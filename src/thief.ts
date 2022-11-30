@@ -1,3 +1,4 @@
+import { Console } from 'console';
 import { Сharacter } from './character'
 
 class Thief extends Сharacter {
@@ -11,10 +12,10 @@ class Thief extends Сharacter {
 
     archeryShot(enemy: any): void {
         if (this.HP === 0) {
-            throw new Error('You are dead, if you want to continue the fight, first relive!');
+            console.log('You are dead, if you want to continue the fight, first relive!');
         } else {
             if (this.HP <= 0) {
-                throw new Error('Your opponent is already dead, you can attack another!');
+                console.log('Your opponent is already dead, you can attack another!');
             } else {
                 if(((enemy.HP - 25) < 0)){
                     enemy.HP = 0;
@@ -27,7 +28,7 @@ class Thief extends Сharacter {
 
     runAway(): void {
         if (this.HP === 0) {
-            throw new Error('You are dead, if you want to continue the fight, first relive!');
+            console.log('You are dead, if you want to continue the fight, first relive!');
         } else {
 
         }

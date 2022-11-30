@@ -8,7 +8,7 @@ class Сharacter {
         if (this.HP === 0) {
             this.HP = this.maxHP;
         } else {
-            throw new Error('Your character is still alive, you can continue the battle!!!');
+            console.log('Your character is still alive, you can continue the battle!!!');
         }
     }
 }

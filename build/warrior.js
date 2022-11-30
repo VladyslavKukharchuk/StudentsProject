@@ -11,11 +11,11 @@ class Warrior extends character_1.Сharacter {
     }
     swordStrike(enemy) {
         if (this.HP === 0) {
-            throw new Error('You are dead, if you want to continue the fight, first relive!');
+            console.log('You are dead, if you want to continue the fight, first relive!');
         }
         else {
             if (enemy.HP === 0) {
-                throw new Error('Your opponent is already dead, you can attack another!');
+                console.log('Your opponent is already dead, you can attack another!');
             }
             else {
                 if (((enemy.HP - 50) < 0)) {
@@ -29,7 +29,7 @@ class Warrior extends character_1.Сharacter {
     }
     defense() {
         if (this.HP === 0) {
-            throw new Error('You are dead, if you want to continue the fight, first relive!');
+            console.log('You are dead, if you want to continue the fight, first relive!');
         }
         else {
         }
