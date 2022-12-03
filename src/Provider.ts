@@ -9,7 +9,7 @@ import { CharacterActions } from './characterActions';
  */
 
 class Provider {
-    static createCharacter(className: string) {
+    static createCharacter(className: string): CharacterActions {
         switch (className) {
             case CharacterClasses.Thief:
                 return new CharacterActions(Thief);

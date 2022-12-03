@@ -1,4 +1,4 @@
-import { Provider } from './characterClasses';
+import { Provider } from './Provider';
 
 let thief1 = Provider.createCharacter("Thief");
 let thief2 = Provider.createCharacter("Thief");
@@ -44,47 +44,3 @@ console.log("Test of Relive:");
 warrior2.useRelive();
 thief2.useRelive();
 mage2.useRelive();
-
-
-// console.log("Test of Archery Shot:");
-
-// thief1.attack(warrior2);
-// thief1.attack(thief2);
-// thief1.attack(mage2);
-
-// console.log(`Warrior2 HP: ${warrior2.characterHP}`);
-// console.log(`Thief2 HP: ${thief2.characterHP}`);
-// console.log(`Mage2 HP: ${mage2.characterHP}`);
-
-
-// console.log("Test of Sword Strike:");
-
-// warrior1.attack(warrior2);
-// warrior1.attack(thief2);
-// warrior1.attack(mage2);
-
-// console.log(`Warrior2 HP: ${warrior2.characterHP}`);
-// console.log(`Thief2 HP: ${thief2.characterHP}`);
-// console.log(`Mage2 HP: ${mage2.characterHP}`);
-
-
-// console.log("Test of Fireball:");
-
-// mage1.attack(warrior2);
-// mage1.attack(thief2);
-// mage1.attack(mage2);
-
-// console.log(`Warrior2 HP: ${warrior2.characterHP}`);
-// console.log(`Thief2 HP: ${thief2.characterHP}`);
-// console.log(`Mage2 HP: ${mage2.characterHP}`);
-
-
-// console.log("Test of Relive:");
-
-// warrior2.relive();
-// thief2.relive();
-// mage2.relive();
-
-// console.log(`Warrior2 HP: ${warrior2.characterHP}`);
-// console.log(`Thief2 HP: ${thief2.characterHP}`);
-// console.log(`Mage2 HP: ${mage2.characterHP}`);

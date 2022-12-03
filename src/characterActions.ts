@@ -1,6 +1,7 @@
 /**
  * The CharacterActions class is our Facade
  */
+
 class CharacterActions {
     private character: any;
 
