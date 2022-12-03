@@ -1,19 +1,19 @@
-import { Provider } from './Provider';
+import { CharacterActions } from './characterActions';
 
-let thief1 = Provider.createCharacter("Thief");
-let thief2 = Provider.createCharacter("Thief");
+let thief1 = new CharacterActions("Thief");
+let thief2 = new CharacterActions("Thief");
 
 console.log(thief1);
 console.log(thief2);
 
-let warrior1 = Provider.createCharacter("Warrior");
-let warrior2 = Provider.createCharacter("Warrior");
+let warrior1 = new CharacterActions("Warrior");
+let warrior2 = new CharacterActions("Warrior");
 
 console.log(warrior1);
 console.log(warrior2);
 
-let mage1 = Provider.createCharacter("Mage");
-let mage2 = Provider.createCharacter("Mage");
+let mage1 = new CharacterActions("Mage");
+let mage2 = new CharacterActions("Mage");
 
 console.log(mage1);
 console.log(mage2);

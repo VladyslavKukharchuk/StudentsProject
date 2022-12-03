@@ -1,12 +1,13 @@
+import { Creator } from './Creator';
+
 /**
  * The CharacterActions class is our Facade
  */
-
 class CharacterActions {
     private character: any;
 
-    constructor(CharacterClass: any) {
-        this.character = new CharacterClass;
+    constructor(className: string) {
+        this.character = Creator.createCharacter(className);
     }
 
     public useAttack(enemy: any): number {
