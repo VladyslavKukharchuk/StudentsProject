@@ -1,21 +1,20 @@
-import { Thief } from './thief';
-import { Warrior } from './warrior';
-import { Mage } from './mage';
+import { Provider } from './characterClasses';
+import { CharacterClasses } from './enums';
 
-let thief1 = new Thief();
-let thief2 = new Thief();
+let thief1 = Provider.createCharacter("Thief");
+let thief2 = Provider.createCharacter("Thief");
 
 console.log(thief1);
 console.log(thief2);
 
-let warrior1 = new Warrior();
-let warrior2 = new Warrior();
+let warrior1 = Provider.createCharacter("Warrior");
+let warrior2 = Provider.createCharacter("Warrior");
 
 console.log(warrior1);
 console.log(warrior2);
 
-let mage1 = new Mage();
-let mage2 = new Mage();
+let mage1 = Provider.createCharacter("Mage");
+let mage2 = Provider.createCharacter("Mage");
 
 console.log(mage1);
 console.log(mage2);
