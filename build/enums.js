@@ -1,5 +1,4 @@
 "use strict";
-// enum CharacterClasses { Thief, Mage, Warrior };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CharacterClasses = void 0;
 var CharacterClasses;

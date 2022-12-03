@@ -1,5 +1,3 @@
-// enum CharacterClasses { Thief, Mage, Warrior };
-
 enum CharacterClasses { 
     Thief = 'Thief',
     Mage = 'Mage',
