@@ -6,7 +6,7 @@ import { Creator } from './Creator';
 class CharacterActions {
     private character: any;
 
-    constructor(className: string) {
+    constructor(className: number) {
         this.character = Creator.createCharacter(className);
     }
 

@@ -1,19 +1,20 @@
 import { CharacterActions } from './characterActions';
+import { CharacterClasses } from './enums';
 
-let thief1 = new CharacterActions("Thief");
-let thief2 = new CharacterActions("Thief");
+let thief1 = new CharacterActions(CharacterClasses.Thief);
+let thief2 = new CharacterActions(CharacterClasses.Thief);
 
 console.log(thief1);
 console.log(thief2);
 
-let warrior1 = new CharacterActions("Warrior");
-let warrior2 = new CharacterActions("Warrior");
+let warrior1 = new CharacterActions(CharacterClasses.Warrior);
+let warrior2 = new CharacterActions(CharacterClasses.Warrior);
 
 console.log(warrior1);
 console.log(warrior2);
 
-let mage1 = new CharacterActions("Mage");
-let mage2 = new CharacterActions("Mage");
+let mage1 = new CharacterActions(CharacterClasses.Mage);
+let mage2 = new CharacterActions(CharacterClasses.Mage);
 
 console.log(mage1);
 console.log(mage2);

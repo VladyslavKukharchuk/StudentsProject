@@ -8,7 +8,7 @@ import { CharacterClasses } from './enums';
  */
 
 class Creator {
-    static createCharacter(className: string) {
+    static createCharacter(className: CharacterClasses) {
         switch (className) {
             case CharacterClasses.Thief:
                 return new Thief();

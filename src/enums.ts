@@ -1,7 +1,7 @@
 enum CharacterClasses {
-    Thief = 'Thief',
-    Mage = 'Mage',
-    Warrior = 'Warrior',
+    Thief,
+    Mage,
+    Warrior,
 };
 
 export { CharacterClasses };
