@@ -1,46 +1,40 @@
-import { Creator } from './Creator';
-
 /**
  * The CharacterActions class is our Facade
  */
+
 class CharacterActions {
-    private character: any;
 
-    constructor(className: number) {
-        this.character = Creator.createCharacter(className);
-    }
+    static useAttack(hero: any ,enemy: any): number {
 
-    public useAttack(enemy: any): number {
-
-        if (this.character.characterHP === 0) {
+        if (hero.characterHP === 0) {
             throw new Error('You are dead, if you want to continue the fight, first relive!');
         }
 
-        if (enemy.character.characterHP === 0) {
+        if (enemy.characterHP === 0) {
             throw new Error('Your opponent is already dead, you can attack another!');
         }
 
-        if (((enemy.character.characterHP - this.character.characterAP) < 0)) {
-            return this.character.finishTheEnemy(enemy.character);
+        if (((enemy.characterHP - hero.characterAP) < 0)) {
+            return hero.finishTheEnemy(enemy);
         }
 
-        this.character.attack(enemy.character);
+        hero.attack(enemy);
     }
 
-    public useAbility(): void {
-        if (this.character.characterHP === 0) {
+    static useAbility(hero: any): void {
+        if (hero.characterHP === 0) {
             throw new Error('You are dead, if you want to continue the fight, first relive!');
         }
 
-        this.character.ability();
+        hero.ability();
     }
 
-    public useRelive(): void {
-        if (this.character.characterHP !== 0) {
+    static useRelive(hero: any): void {
+        if (hero.characterHP !== 0) {
             throw new Error('Your character is still alive, you can continue the battle!!!');
         }
 
-        this.character.relive()
+        hero.relive()
     }
 }
 
