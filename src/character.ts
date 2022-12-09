@@ -15,30 +15,17 @@ abstract class Сharacter {
         return this.attackPower;
     }
 
-    attack(enemy: any): number {
+    attack(enemy: any): void {
+        enemy.healthPoint -= this.attackPower;
+    }
 
-        if (this.healthPoint === 0) {
-            throw new Error('You are dead, if you want to continue the fight, first relive!');
-        }
-
-        if (enemy.healthPoint <= 0) {
-            throw new Error('Your opponent is already dead, you can attack another!');
-        }
-
-        if (((enemy.healthPoint - this.attackPower) < 0)) {
-            return enemy.healthPoint = 0;
-        }
-
-        return enemy.healthPoint -= this.attackPower;
-
+    finishTheEnemy(enemy: any): void {
+        enemy.healthPoint = 0;
     }
 
     abstract ability(): void;
 
-    relive() {
-        if (this.healthPoint !== 0) {
-            throw new Error('Your character is still alive, you can continue the battle!!!');
-        }
+    relive(): void {
         this.healthPoint = this.maxHP;
     }
 }
