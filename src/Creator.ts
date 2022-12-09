@@ -7,8 +7,8 @@ import { CharacterClasses } from './enums';
  * The CharacterActions class is our Factory
  */
 
-class Provider {
-    static createCharacter(className: string) {
+class Creator {
+    static createCharacter(className: CharacterClasses) {
         switch (className) {
             case CharacterClasses.Thief:
                 return new Thief();
@@ -22,4 +22,4 @@ class Provider {
     }
 }
 
-export { Provider };
+export { Creator };
