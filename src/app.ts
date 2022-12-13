@@ -1,21 +1,21 @@
-import { CharacterActions } from './characterActions';
-import { Creator } from './Creator';
-import { CharacterClasses } from './enums';
+import { CharacterActions } from './character/characterActions';
+import { CharacterCreator } from './character/characterCreator';
+import { CharacterClasses } from './config/enums';
 
-let thief1 = Creator.createCharacter(CharacterClasses.Thief);
-let thief2 = Creator.createCharacter(CharacterClasses.Thief);
+let thief1 = CharacterCreator.createCharacter(CharacterClasses.Thief);
+let thief2 = CharacterCreator.createCharacter(CharacterClasses.Thief);
 
 console.log(thief1);
 console.log(thief2);
 
-let warrior1 = Creator.createCharacter(CharacterClasses.Warrior);
-let warrior2 = Creator.createCharacter(CharacterClasses.Warrior);
+let warrior1 = CharacterCreator.createCharacter(CharacterClasses.Warrior);
+let warrior2 = CharacterCreator.createCharacter(CharacterClasses.Warrior);
 
 console.log(warrior1);
 console.log(warrior2);
 
-let mage1 = Creator.createCharacter(CharacterClasses.Mage);
-let mage2 = Creator.createCharacter(CharacterClasses.Mage);
+let mage1 = CharacterCreator.createCharacter(CharacterClasses.Mage);
+let mage2 = CharacterCreator.createCharacter(CharacterClasses.Mage);
 
 console.log(mage1);
 console.log(mage2);

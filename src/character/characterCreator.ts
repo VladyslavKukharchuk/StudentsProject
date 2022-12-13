@@ -1,13 +1,13 @@
-import { Thief } from './thief';
-import { Warrior } from './warrior';
-import { Mage } from './mage';
-import { CharacterClasses } from './enums';
+import { Thief } from '../characterClasses/thief';
+import { Warrior } from '../characterClasses/warrior';
+import { Mage } from '../characterClasses/mage';
+import { CharacterClasses } from '../config/enums';
 
 /**
  * The CharacterActions class is our Factory
  */
 
-class Creator {
+class CharacterCreator {
     static createCharacter(className: CharacterClasses) {
         switch (className) {
             case CharacterClasses.Thief:
@@ -22,4 +22,4 @@ class Creator {
     }
 }
 
-export { Creator };
+export { CharacterCreator };
