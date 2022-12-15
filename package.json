@@ -2,12 +2,11 @@
   "name": "studentsproject",
   "version": "1.0.0",
   "description": "Repository for the implementation of the project described in the [technical task](https://docs.google.com/document/d/1smlvEuArov1OVh3S1IOfy0A-nXYQb2F3TohCUPteiMI/edit?usp=sharing).",
-  "main": "build/bin/www/server.js",
+  "main": "build/server.js",
   "type": "commonjs",
   "scripts": {
-    "start": "tsc && node build/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "tsc && nodemon build/server.js"
+    "start": "tsc && nodemon build/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
