@@ -33,7 +33,7 @@ class UserService {
         const {username, email, password, duplicatePassword, id} = user;
         const candidate = await User.findOne({email});
         if (candidate) {
-            throw new Error('a user with this email already exists');
+            throw new Error('User with this email already exists');
         }
         const newUser = await User.create({username, email, password, id});
         return newUser;

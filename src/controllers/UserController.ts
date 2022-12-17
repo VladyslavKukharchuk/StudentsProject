@@ -1,4 +1,3 @@
-import User from "../models/User";
 import {UserService} from "../services/UserService";
 
 class UserController {
@@ -6,12 +5,9 @@ class UserController {
     // получаем email и пароль
     // возвращаем jwt токен
     static async login(req, res, next) {
-        try {
-            const accessToken = await UserService.login(req.body);
-            res.status(200).json(accessToken);
-        } catch (e) {
-            next(e);
-        }
+        await UserService.login(req.body)
+            .then(accessToken => res.status(200).json(accessToken))
+            .catch(err => next(err));
     }
 
 
@@ -20,26 +16,19 @@ class UserController {
     // проверяем наличие и корректность всех полей
     // возвращаем созданного юзера
     static async registration(req, res, next) {
-        try {
-            const newUser = await UserService.registration(req.body);
-            res.status(200).json(newUser);
-        } catch (e) {
-            next(e);
-        }
+        await UserService.registration(req.body)
+            .then(newUser => res.status(200).json(newUser))
+            .catch(err => next(err));
     }
-
 
     // обновление личных данных(ник, старый пароль, пароль, дубль пароля, id нового класса)
     // проверяем токен
     // валидируем переданные данные
     // возвращаем обновленного юзера
     static async update(req, res, next) {
-        try {
-            const updatedUser = await UserService.update(req.params.id, req.body);
-            res.status(200).json(updatedUser);
-        } catch (e) {
-            next(e);
-        }
+        await UserService.update(req.params.id, req.body)
+            .then(updatedUser => res.status(200).json(updatedUser))
+            .catch(err => next(err));
     }
 }
 
