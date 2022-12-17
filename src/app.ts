@@ -1,14 +1,17 @@
 //Http server
 import express from 'express';
+import http from 'http';
+import WebSocket from 'ws';
+import { router } from "./router";
+import mongoose from "mongoose";
+
+const DB_URL = `mongodb+srv://user:user@cluster0.q8wq4ns.mongodb.net/?retryWrites=true&w=majority`;
+mongoose.set('strictQuery', false);
 
 const app = express();
 const httpServerPort = 3000;
-import { router } from "./router";
 
 //WebSocket server
-
-import http from 'http';
-import WebSocket from 'ws';
 
 const wsServerPort = 3001;
 const server = http.createServer(app);
@@ -41,10 +44,12 @@ wss.on('connection', (ws: WebSocket) => {
     });
 });
 
-app.use('/api', router)
+app.use(express.json());
+app.use('/api', router);
 
 async function startServers() {
     try {
+        await mongoose.connect(DB_URL);
         app.listen(httpServerPort, () => {
             console.log(`Http Server started on port ${httpServerPort}.`)
         })

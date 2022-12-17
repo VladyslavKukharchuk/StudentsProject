@@ -1,19 +1,17 @@
-import { UserService } from "../services/UserService";
+import User from "../models/User";
+import {UserService} from "../services/UserService";
 
 class UserController {
-
-    // логин(получаем email и пароль, находим юзера, проверяем, создаем сессию в mongodb, возвращаем jwt токен)
+    // логин
     // получаем email и пароль
-    // создаем сессию в mongodb
     // возвращаем jwt токен
-    async login(req, res) {
-        // try {
-        //     const { username, password } = req.body;
-        //     const accessToken = await UserService.login(username, password);
-        //     req.status(200).json({ accessToken });
-        // } catch (e) {
-        //     res.status(500).json(e)
-        // }
+    static async login(req, res, next) {
+        try {
+            const accessToken = await UserService.login(req.body);
+            res.status(200).json(accessToken);
+        } catch (e) {
+            next(e);
+        }
     }
 
 
@@ -21,14 +19,13 @@ class UserController {
     // передаем ник, email, пароль, дубль пароля, id выбранного класса
     // проверяем наличие и корректность всех полей
     // возвращаем созданного юзера
-    async registration(req, res) {
-        // try {
-        //     const { nickname, email, password, duplicatePassword, id } = req.body;
-        //     const newUser = await UserService.registration(nickname, email, password, duplicatePassword, id);
-        //     res.status(200).json(newUser);
-        // } catch (e) {
-        //     res.status(500).json(e)
-        // }
+    static async registration(req, res, next) {
+        try {
+            const newUser = await UserService.registration(req.body);
+            res.status(200).json(newUser);
+        } catch (e) {
+            next(e);
+        }
     }
 
 
@@ -36,17 +33,15 @@ class UserController {
     // проверяем токен
     // валидируем переданные данные
     // возвращаем обновленного юзера
-    async update(req, res) {
-        // try {
-        //     const { id } = req.params;
-        //     const { changes } = req.body;
-        //     const updatedUser = await  UserService.update(id, changes);
-        //     res.json(updatedUser);
-        // } catch (e) {
-        //     res.status(500).json(e)
-        // }
+    static async update(req, res, next) {
+        try {
+            const updatedUser = await UserService.update(req.params.id, req.body);
+            res.status(200).json(updatedUser);
+        } catch (e) {
+            next(e);
+        }
     }
 }
 
 
-export { UserController };
+export {UserController};
