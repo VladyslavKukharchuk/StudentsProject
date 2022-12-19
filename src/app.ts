@@ -19,31 +19,6 @@ const wss = new WebSocket.Server({ server });
 
 // WS
 
-wss.on('connection', (ws: WebSocket) => {
-
-    ws.on('message', (message: string) => {
-
-        let data = (JSON.parse(message));
-
-        switch (data.event) {
-            case "attack":
-                ws.send(`attack ${data.id}`);
-                break;
-            case "ability":
-                ws.send(`ability ${data.id}`);
-                break;
-            case "relive":
-                ws.send(`relive ${data.id}`);
-                break;
-            case "message":
-                ws.send("message");
-                break;
-        }
-
-        ws.send(`Hello, you sent -> ${message}`);
-    });
-});
-
 app.use(express.json());
 app.use('/api', router);
 
@@ -63,6 +38,11 @@ async function startServers() {
 
 startServers();
 
+import {EventsController } from "./controllers/EventsController";
+
+wss.on('connection', EventsController.connectWS);
+
+export { wss };
 
 // import { CharacterActions } from './character/characterActions';
 // import { CharacterCreator } from './character/characterCreator';

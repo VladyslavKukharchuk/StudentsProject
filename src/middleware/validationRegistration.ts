@@ -11,8 +11,8 @@ function validationRegistration(req, res, next) {
         throw new Error('Invalid email');
     }
 
-    let minPassLength = 5;
-    let maxPassLength = 15;
+    const minPassLength = 5;
+    const maxPassLength = 15;
     if (password.length <= minPassLength) {
         throw new Error(`The password must be longer than ${minPassLength} characters.`);
     }

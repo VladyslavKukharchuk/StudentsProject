@@ -2,10 +2,18 @@
   "compilerOptions": {
     "module": "commonjs",
     "esModuleInterop": true,
-    "target": "es6",
+    "target": "ES2018",
+    "lib": ["ES6"],
     "moduleResolution": "node",
-    "sourceMap": false,
-    "outDir": "build"
+    "removeComments": true,
+    "allowJs": true,
+    "sourceMap": true,
+    "rootDir": "./src",
+    "outDir": "./build"
   },
-  "lib": ["es2015"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"],
+  "ts-node": {
+    "esm": true
+  }
 }
