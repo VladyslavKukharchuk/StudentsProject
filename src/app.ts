@@ -1,36 +1,30 @@
 //Http server
 import express from 'express';
-import http from 'http';
-import WebSocket from 'ws';
-import { router } from "./router";
+import { createServer } from 'http';
+import { Server } from "socket.io";
+import {router} from "./router";
 import mongoose from "mongoose";
 
 const DB_URL = `mongodb+srv://user:user@cluster0.q8wq4ns.mongodb.net/?retryWrites=true&w=majority`;
 mongoose.set('strictQuery', false);
 
 const app = express();
-const httpServerPort = 3000;
-
-//WebSocket server
-
-const wsServerPort = 3001;
-const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
-
-// WS
+const port = 3000;
 
 app.use(express.json());
 app.use('/api', router);
 
+const httpServer = createServer(app);
+const io = new Server(httpServer);
+// const server = http.createServer(app);
+// const wss = new WebSocket.Server({ server });
+
 async function startServers() {
     try {
         await mongoose.connect(DB_URL);
-        app.listen(httpServerPort, () => {
-            console.log(`Http Server started on port ${httpServerPort}.`)
+        httpServer.listen(port, () => {
+            console.log(`Server started on port ${port}.`)
         })
-        server.listen(wsServerPort, () => {
-            console.log(`WebSocket Server started on port ${wsServerPort}.`);
-        });
     } catch (e) {
         console.log(e)
     }
@@ -38,11 +32,35 @@ async function startServers() {
 
 startServers();
 
+
+
+
+import {authentication} from "./middleware/authentication";
+
+// подключение
+// проверяем jwt токен.
+io.use(authentication.ws);
+
+// получаем класс юзера
+// создаем сессию в mongodb{
+//  "_id": number;
+//  "username": string;
+//  "hp": number;
+//  "statuses": number[];
+// }
+// подписываем текущего юзера на вебсокет
+// отправляем сессии всех активных пользователей
+// отправляем кеш последних 10 сообщений из Redis
 import {EventsController } from "./controllers/EventsController";
+io.on("connection", EventsController.connection);
 
-wss.on('connection', EventsController.connectWS);
+//Типы событий
 
-export { wss };
+// attack
+// ability
+// message
+// restore
+
 
 // import { CharacterActions } from './character/characterActions';
 // import { CharacterCreator } from './character/characterCreator';

@@ -1,59 +1,103 @@
 import {EventService} from "../services/EventService";
 
-import {v4 as uuid} from "uuid";
-
-const clients = {};
-const masseges = [];
 
 class EventsController {
-    static connectWS(ws) {
+    static connection(socket) {
+        console.log(`Підключився новий клієнт.`);
 
-        // треба присвоїти id  клієнту щоб потім можна було до нього звертатися
-        const id = uuid();
-        clients[id] = ws;
-        console.log(`New client with id: ${id} is connected :)`);
-        ws.send(JSON.stringify(masseges));
+        // // Действия
+        //
+        // // атака
+        // //  получаем класс текущего юзера из postgre
+        // //  получаем сессию целевого юзера из mongo
+        // //  проверяем действующие статусы на целевом юзере и возможно ли провести атаку.
+        // //  Если нет возвращаем ошибку автору
+        // //  Уменьшаем здоровье целевого юзера и сохраняем изменения в сессии.
+        // //  Возвращаем измененную сессию целевого юзера всем подписчикам
+        // socket.emit("attack", (req) => {
+        //     EventService.attack(req);
+        // });
+        //
+        // // применение способности
+        // //  получаем класс текущего юзера из postgre
+        // //  получаем сессию целевого юзера из mongo
+        // //  проверяем можно ли применить способность к целевому юзеру
+        // //  Если нет возвращаем ошибку автору
+        // //  Добавляем статус целевому юзеру и сохраняем изменения в сессии.
+        // //  Возвращаем измененную сессию целевого юзера всем подписчикам
+        // socket.emit("ability", (req) => {
+        //     EventService.ability(req);
+        // });
+        //
+        // // сообщение
+        // //  Проверяем может ли юзер писать сообщения
+        // //  Если нет возвращаем ошибку автору
+        // //  Отправляем сообщение всем подписчикам
+        // socket.emit("message", (req) => {
+        //     EventService.message(req);
+        // });
+        //
+        // // возрождение
+        // //  Проверяем нужно ли юзеру возрождение
+        // //  Если нет возвращаем ошибку автору
+        // //  Если да получаем класс текущего юзера из postgre
+        // //  Пересоздаем сессию в mongo
+        // //  Возвращаем обновленную сессию целевого юзера всем подписчикам
+        // socket.emit("restore", (req) => {
+        //     EventService.message(req);
+        // });
 
-        ws.on('message', (message: string) => {
-            const data = JSON.parse(message);
 
-            ws.send("it is working");
-            switch (data.event) {
-                case "attack":
-                    // const {event, userMessage, name} = data;
-                    // masseges.push({name, userMessage});
-                    // for (const id in clients) {
-                    //     clients[id].send(JSON.stringify({name, userMessage}))
-                    // }
-                    ws.send(`attack ${data.id}`);
-                    break;
-                case "ability":
-                    ws.send(`ability ${data.id}`);
-                    break;
-                case "relive":
-                    ws.send(`relive ${data.id}`);
-                    break;
-                case "message":
-                    EventService.sendMessage(data);
+        // получать и различать события
 
-                    // EventService.broadcastMessage(data.message, ws);
-
-                    break;
-                default:
-                    ws.send("The server does not provide such an action");
-                    break;
-            }
+        // атака
+        // {
+        //     "type": EventTypeEnum;
+        //     "userId": number;
+        // }
+        socket.on("attack", (res) => {
+            EventService.attack(socket, res);
         });
 
-        ws.on('close', () => {
-            delete clients[id];
-            console.log(clients);
-            console.log(`Clients ${id} is closed :(`)
-        })
-    };
+        // применение способности
+        // {
+        //     "type": EventTypeEnum;
+        //     "userId": number;
+        // }
+        socket.on("ability", (res) => {
+            EventService.ability(socket, res);
+        });
+
+        // сообщение
+        // {
+        //     "type": EventTypeEnum;
+        //     "message": string;
+        // }
+        socket.on("message", (res) => {
+            // EventService.message(socket, res);
+            socket.broadcast.emit("user connected", {
+                res
+            });
+        });
+
+        // возрождение
+        // {
+        //     "type": EventTypeEnum;
+        // }
+        socket.on("restore", (res) => {
+            EventService.restore(socket, res);
+        });
+
+        // отключение
+        // удаляем сессию из mongodb
+        // убираем юзера из подписчиков ws сервера
+        socket.on("disconnect", (reason) => {
+            console.log(reason);
+        });
+    }
 }
 
-export {EventsController, clients, masseges};
+export {EventsController};
 
 // const EventEmitter = require('events').EventEmitter;
 // const chatRoomEvents = new EventEmitter;
