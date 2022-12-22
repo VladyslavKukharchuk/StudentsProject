@@ -1,14 +1,13 @@
 function errorHandler(err, req, res, next) {
-    if (res.headersSent) {
-        return next(err);
+    if (res.headersSent){
+        return  next(err);
     }
+
     console.warn('error', '', {
         message: 'Error Handler',
         action: `${req.method} : ${req.url}`,
         body: {
-            ...req.body,
-            secretKey: undefined,
-            publicKey: undefined,
+            ...req.body
         },
         err,
     });
@@ -16,4 +15,4 @@ function errorHandler(err, req, res, next) {
     res.status(500).send(err.message);
 }
 
-export { errorHandler };
+export {errorHandler};

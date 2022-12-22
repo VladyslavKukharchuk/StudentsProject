@@ -1,7 +1,6 @@
-//Http server
 import express from 'express';
-import { createServer } from 'http';
-import { Server } from "socket.io";
+import {createServer} from 'http';
+import {Server} from "socket.io";
 import {router} from "./router";
 import mongoose from "mongoose";
 
@@ -9,15 +8,13 @@ const DB_URL = `mongodb+srv://user:user@cluster0.q8wq4ns.mongodb.net/?retryWrite
 mongoose.set('strictQuery', false);
 
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer);
+
 const port = 3000;
 
 app.use(express.json());
 app.use('/api', router);
-
-const httpServer = createServer(app);
-const io = new Server(httpServer);
-// const server = http.createServer(app);
-// const wss = new WebSocket.Server({ server });
 
 async function startServers() {
     try {
@@ -26,40 +23,20 @@ async function startServers() {
             console.log(`Server started on port ${port}.`)
         })
     } catch (e) {
-        console.log(e)
+        throw new Error(e)
     }
 }
 
 startServers();
 
-
-
-
+import {EventsController} from "./controllers/EventsController";
 import {authentication} from "./middleware/authentication";
 
 // подключение
 // проверяем jwt токен.
-io.use(authentication.ws);
+io.use(authentication.ws).on("connection", EventsController.connection);
 
-// получаем класс юзера
-// создаем сессию в mongodb{
-//  "_id": number;
-//  "username": string;
-//  "hp": number;
-//  "statuses": number[];
-// }
-// подписываем текущего юзера на вебсокет
-// отправляем сессии всех активных пользователей
-// отправляем кеш последних 10 сообщений из Redis
-import {EventsController } from "./controllers/EventsController";
-io.on("connection", EventsController.connection);
-
-//Типы событий
-
-// attack
-// ability
-// message
-// restore
+export {io};
 
 
 // import { CharacterActions } from './character/characterActions';
