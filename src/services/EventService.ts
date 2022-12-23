@@ -9,7 +9,7 @@ class EventService {
     //  Если нет возвращаем ошибку автору
     //  Уменьшаем здоровье целевого юзера и сохраняем изменения в сессии.
     //  Возвращаем измененную сессию целевого юзера всем подписчикам
-    static attack(id: number) {
+    static async attack(id: number) {
         return id;
     }
 
@@ -20,7 +20,7 @@ class EventService {
     //  Если нет возвращаем ошибку автору
     //  Добавляем статус целевому юзеру и сохраняем изменения в сессии.
     //  Возвращаем измененную сессию целевого юзера всем подписчикам
-    static ability(id: number) {
+    static async ability(id: number) {
         return id;
     }
 
@@ -28,7 +28,7 @@ class EventService {
     //  Проверяем может ли юзер писать сообщения
     //  Если нет возвращаем ошибку автору
     //  Отправляем сообщение всем подписчикам
-    static message(message: string) {
+    static async message(message: string) {
         return message;
     }
 
@@ -38,7 +38,7 @@ class EventService {
     //  Если да получаем класс текущего юзера из postgre
     //  Пересоздаем сессию в mongo
     //  Возвращаем обновленную сессию целевого юзера всем подписчикам
-    static restore() {
+    static async restore() {
         console.log(`User used restore.`);
     }
 }

@@ -1,20 +1,17 @@
-import { Сharacter } from './character'
+import { Character } from './character';
 
-class Thief extends Сharacter {
+class Thief extends Character {
+   constructor() {
+      super();
+      this.healthPoint = 100;
+      this.maxHP = 100;
+      this.attackPower = 25;
+      this.class = 'Thief';
+      this.attackName = 'Archery Shot';
+      this.abilityName = 'Run Away';
+   }
 
-    constructor() {
-        super()
-        this.healthPoint = 100;
-        this.maxHP = 100;
-        this.attackPower = 25;
-        this.class = "Thief";
-        this.attackName = "Archery Shot";
-        this.abilityName = "Run Away";
-    }
-
-    ability(): void {
-
-    }
+   ability(): void {}
 }
 
 export { Thief };

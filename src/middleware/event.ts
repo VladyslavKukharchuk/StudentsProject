@@ -1,33 +1,35 @@
 class Event {
-    static forOll([eventType, data], next) {
-        switch (eventType) {
+   static forOll([eventType, data], next) {
+      try {
+         switch (eventType) {
             case 'attack':
-                console.log(data.userId)
-                console.log(typeof (data.userId))
-                if (typeof (data.userId) !== "number") {
-                    throw new Error('Id must be a number');
-                }
-                break;
+               if (typeof data.userId !== 'number') {
+                  throw new Error('Id must be a number');
+               }
+               break;
             case 'ability':
-                if (typeof (data.userId) !== "number") {
-                    throw new Error('Id must be a number');
-                }
-                break;
+               if (typeof data.userId !== 'number') {
+                  throw new Error('Id must be a number');
+               }
+               break;
             case 'message':
-                if (typeof (data.message) !== "string") {
-                    throw new Error('Message must be a string');
-                }
-                break;
+               if (typeof data.message !== 'string') {
+                  throw new Error('Message must be a string');
+               }
+               break;
             case 'restore':
-                if (JSON.stringify(data) !== '{}') {
-                    throw new Error('Restore does not need data to work');
-                }
-                break;
+               if (JSON.stringify(data) !== '{}') {
+                  throw new Error('Restore does not need data to work');
+               }
+               break;
             default:
-                throw new Error('You are using an unknown function');
-        }
-        next()
-    }
+               throw new Error('You are using an unknown function');
+         }
+         next();
+      } catch (e) {
+         next(e);
+      }
+   }
 }
 
-export {Event}
+export { Event };

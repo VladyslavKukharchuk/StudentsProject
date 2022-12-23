@@ -1,20 +1,17 @@
-import { Сharacter } from './character';
+import { Character } from './character';
 
-class Warrior extends Сharacter {
+class Warrior extends Character {
+   constructor() {
+      super();
+      this.healthPoint = 200;
+      this.maxHP = 200;
+      this.attackPower = 50;
+      this.class = 'Warrior';
+      this.attackName = 'Sword Strike';
+      this.abilityName = 'Defense';
+   }
 
-    constructor() {
-        super();
-        this.healthPoint = 200;
-        this.maxHP = 200;
-        this.attackPower = 50;
-        this.class = "Warrior";
-        this.attackName = "Sword Strike";
-        this.abilityName = "Defense";
-    }
-
-    ability(): void {
-
-    }
+   ability(): void {}
 }
 
 export { Warrior };

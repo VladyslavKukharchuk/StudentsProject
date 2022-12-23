@@ -1,8 +1,11 @@
 import express from 'express';
-import {createServer} from 'http';
-import {Server} from "socket.io";
-import {router} from "./router";
-import mongoose from "mongoose";
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import { router } from './router';
+import mongoose from 'mongoose';
+import { errorHandler } from './middleware/errorHandler';
+import { EventsController } from './controllers/EventsController';
+import { authentication } from './middleware/authentication';
 
 const DB_URL = `mongodb+srv://user:user@cluster0.q8wq4ns.mongodb.net/?retryWrites=true&w=majority`;
 mongoose.set('strictQuery', false);
@@ -10,34 +13,80 @@ mongoose.set('strictQuery', false);
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer);
-
 const port = 3000;
 
 app.use(express.json());
 app.use('/api', router);
-
-async function startServers() {
-    try {
-        await mongoose.connect(DB_URL);
-        httpServer.listen(port, () => {
-            console.log(`Server started on port ${port}.`)
-        })
-    } catch (e) {
-        throw new Error(e)
-    }
-}
-
-startServers();
-
-import {EventsController} from "./controllers/EventsController";
-import {authentication} from "./middleware/authentication";
+app.use(errorHandler);
 
 // подключение
 // проверяем jwt токен.
-io.use(authentication.ws).on("connection", EventsController.connection);
+io.use(authentication.ws).on('connection', EventsController.connection);
 
-export {io};
+(async function startServers() {
+   try {
+      await mongoose.connect(DB_URL);
+      httpServer.listen(port, () => {
+         console.log(`Server started on port ${port}.`);
+      });
+   } catch (e) {
+      throw new Error(e);
+   }
+})();
 
+//uncaughtException
+process.on('uncaughtException', (err) => {
+   console.warn('uncaughtException', '', {
+      message: 'uncaughtException',
+      body: {
+         err,
+      },
+   });
+
+   httpServer.close(() => {
+      process.exit(1); // then exit
+   });
+
+   setTimeout(() => {
+      process.abort();
+   }, 1000).unref();
+});
+
+//unhandledRejection
+process.on('unhandledRejection', (reason, promise) => {
+   console.warn({
+      message: 'Unhandled promise rejection',
+      params: {
+         promise,
+         reason,
+      },
+   });
+
+   httpServer.close(() => {
+      process.exit(1);
+   });
+
+   setTimeout(() => {
+      process.abort();
+   }, 1000).unref();
+});
+
+process.on('SIGTERM', () => {
+   console.info('SIGTERM signal received.');
+   console.log('Closing http server.');
+   httpServer.close(() => {
+      console.log('Http server closed.');
+      mongoose.connection.close(false, () => {
+         console.log('MongoDb connection closed.');
+         process.exit(0);
+      });
+      io.close(() => {
+         console.log('All connections were closed.');
+      });
+   });
+});
+
+export { io, httpServer };
 
 // import { CharacterActions } from './character/characterActions';
 // import { CharacterCreator } from './character/characterCreator';

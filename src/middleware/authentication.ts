@@ -1,52 +1,40 @@
-import jwt from "jsonwebtoken";
-import {secret} from "../config/jwtKey";
+import jwt from 'jsonwebtoken';
+import { secret } from '../config/jwtKey';
 
 class authentication {
-    static http(req, res, next) {
-        if (req.method === "OPTIONS") {
-            next()
-        }
+   static http(req, res, next) {
+      if (req.method === 'OPTIONS') {
+         next();
+      }
 
-        try {
-            const authHeader = req.headers.authorization;
-            if (!authHeader) {
-                return res.status(403).json({message: "request without a token"})
-            }
-            const token = authHeader.split(' ')[1]
-            if (!token) {
-                return res.status(403).json({message: "Пользователь не авторизован"})
-            }
-            const decodedData = jwt.verify(token, secret)
-            req.user = decodedData
-            next()
-        } catch (e) {
-            console.log(e)
-            return res.status(403).json({message: "Пользователь не авторизован"})
-        }
-    }
+      try {
+         const authHeader = req.headers.authorization;
+         if (!authHeader) {
+            throw new Error('request without a token');
+         }
+         const token = authHeader.split(' ')[1];
+         req.user = jwt.verify(token, secret);
+         next();
+      } catch (e) {
+         next(e);
+      }
+   }
 
-    static ws(socket, next) {
-            const token = socket.handshake.headers.access_token;
-            console.log(token);
+   static ws(socket, next) {
+      try {
+         const authHeader = socket.handshake.headers.access_token;
+         if (!authHeader) {
+            throw new Error('request without a token');
+         }
+         const token = authHeader.split(' ')[1];
+         jwt.verify(token, secret);
 
-        try {
-            const authHeader = socket.handshake.headers.access_token;
-            if (!authHeader) {
-                next(new Error("request without a token"));
-            }
-            const token = authHeader.split(' ')[1]
-            if (!token) {
-                next(new Error("Пользователь не авторизован"));
-            }
-            jwt.verify(token, secret)
-
-            next()
-        } catch (e) {
-            console.log(e)
-            next(e)
-        }
-    }
+         console.log(authHeader);
+         next();
+      } catch (e) {
+         next(e);
+      }
+   }
 }
 
-export {authentication};
-
+export { authentication };

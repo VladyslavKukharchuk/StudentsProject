@@ -3,39 +3,37 @@
  */
 
 class CharacterActions {
+   static useAttack(hero: any, enemy: any): number {
+      if (hero.characterHP === 0) {
+         throw new Error('You are dead, if you want to continue the fight, first relive!');
+      }
 
-    static useAttack(hero: any ,enemy: any): number {
+      if (enemy.characterHP === 0) {
+         throw new Error('Your opponent is already dead, you can attack another!');
+      }
 
-        if (hero.characterHP === 0) {
-            throw new Error('You are dead, if you want to continue the fight, first relive!');
-        }
+      if (enemy.characterHP - hero.characterAP < 0) {
+         return hero.finishTheEnemy(enemy);
+      }
 
-        if (enemy.characterHP === 0) {
-            throw new Error('Your opponent is already dead, you can attack another!');
-        }
+      hero.attack(enemy);
+   }
 
-        if (((enemy.characterHP - hero.characterAP) < 0)) {
-            return hero.finishTheEnemy(enemy);
-        }
+   static useAbility(hero: any): void {
+      if (hero.characterHP === 0) {
+         throw new Error('You are dead, if you want to continue the fight, first relive!');
+      }
 
-        hero.attack(enemy);
-    }
+      hero.ability();
+   }
 
-    static useAbility(hero: any): void {
-        if (hero.characterHP === 0) {
-            throw new Error('You are dead, if you want to continue the fight, first relive!');
-        }
+   static useRelive(hero: any): void {
+      if (hero.characterHP !== 0) {
+         throw new Error('Your character is still alive, you can continue the battle!!!');
+      }
 
-        hero.ability();
-    }
-
-    static useRelive(hero: any): void {
-        if (hero.characterHP !== 0) {
-            throw new Error('Your character is still alive, you can continue the battle!!!');
-        }
-
-        hero.relive()
-    }
+      hero.relive();
+   }
 }
 
 export { CharacterActions };
