@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken';
 import { secret } from '../config/jwtKey';
+import { Response, NextFunction } from 'express';
 
 class authentication {
-   static http(req, res, next) {
+   static http(req: any, res: Response, next: NextFunction) {
       if (req.method === 'OPTIONS') {
          next();
       }
@@ -20,7 +21,7 @@ class authentication {
       }
    }
 
-   static ws(socket, next) {
+   static ws(socket: any, next: any) {
       try {
          const authHeader = socket.handshake.headers.access_token;
          if (!authHeader) {

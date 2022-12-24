@@ -5,7 +5,7 @@ import { secret } from '../config/jwtKey';
 
 import { ValidationError } from '../middleware/errorHandler';
 
-const generateAccessToken = (id) => {
+const generateAccessToken = (id: any) => {
    const payload = {
       id,
    };
@@ -16,7 +16,7 @@ class UserService {
    // логин
    // находим юзера, проверяем
    // возвращаем jwt токен
-   static async login(userData) {
+   static async login(userData: any) {
       const { email, password } = userData;
       const user = await User.findOne({ email });
       const validPassword = await User.findOne({ password });
@@ -28,9 +28,9 @@ class UserService {
    }
 
    // регистрация
-   // создаем запись юзера в postgreSQL
+   // создаем запись юзера в postgresSQL
    // возвращаем созданного юзера
-   static async registration(user) {
+   static async registration(user: any) {
       const { username, email, password, duplicatePassword, id } = user;
       const candidate = await User.findOne({ email });
       if (candidate) {
@@ -43,7 +43,7 @@ class UserService {
    // обновление личных данных(ник, старый пароль, пароль, дубль пароля, id нового класса)
    // обновляем запись в базе данных
    // возвращаем обновленного юзера
-   static async update(id, user) {
+   static async update(id: any, user: any) {
       if (!id) {
          throw new Error('ID is not specified');
       }

@@ -1,6 +1,7 @@
+import { Request, Response, NextFunction } from 'express';
 import { ValidationError } from './errorHandler';
 
-function validationRegistration(req, res, next) {
+function validationRegistration(req: Request, res: Response, next: NextFunction) {
    const { username, email, password, duplicatePassword } = req.body;
 
    const validUsername = /^[a-z0-9_-]{3,16}$/;

@@ -3,7 +3,7 @@
  */
 
 class CharacterActions {
-   static useAttack(hero: any, enemy: any): number {
+   static useAttack(hero: any, enemy: any): number | undefined {
       if (hero.characterHP === 0) {
          throw new Error('You are dead, if you want to continue the fight, first relive!');
       }

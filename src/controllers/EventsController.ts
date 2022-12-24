@@ -1,5 +1,4 @@
 import { EventService } from '../services/EventService';
-import { io } from '../app';
 import { Event } from '../middleware/event';
 
 class EventsController {
@@ -13,7 +12,7 @@ class EventsController {
    // подписываем текущего юзера на вебсокет
    // отправляем сессии всех активных пользователей
    // отправляем кеш последних 10 сообщений из Redis
-   static connection(socket) {
+   static connection(io: any, socket: any) {
       console.log(`A new user with id: ${socket.id} has connected.`);
       socket.send('You have successfully connected');
 
@@ -26,7 +25,7 @@ class EventsController {
       // {
       //     "userId": number;
       // }
-      socket.on('attack', async (req) => {
+      socket.on('attack', async (req: any) => {
          // // атака
          // //  Возвращаем измененную сессию целевого юзера всем подписчикам
          await EventService.attack(req.userId)
@@ -40,7 +39,7 @@ class EventsController {
       // {
       //     "userId": number;
       // }
-      socket.on('ability', async (req) => {
+      socket.on('ability', async (req: any) => {
          // применение способности
          //  Возвращаем измененную сессию целевого юзера всем подписчикам
          await EventService.ability(req.userId)
@@ -54,7 +53,7 @@ class EventsController {
       // {
       //     "message": string;
       // }
-      socket.on('message', async (req) => {
+      socket.on('message', async (req: any) => {
          // сообщение
          //  Отправляем сообщение всем подписчикам
          await EventService.message(req.message)
@@ -80,7 +79,7 @@ class EventsController {
       // отключение
       // удаляем сессию из mongodb
       // убираем юзера из подписчиков ws сервера
-      socket.on('disconnect', (reason) => {
+      socket.on('disconnect', (reason: any) => {
          console.log(reason);
       });
    }

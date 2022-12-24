@@ -1,5 +1,7 @@
+import { NextFunction } from 'express';
+
 class Event {
-   static forOll([eventType, data], next) {
+   static forOll([eventType, data]: any, next: NextFunction) {
       try {
          switch (eventType) {
             case 'attack':

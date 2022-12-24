@@ -21,7 +21,9 @@ app.use(errorHandler);
 
 // подключение
 // проверяем jwt токен.
-io.use(authentication.ws).on('connection', EventsController.connection);
+io.use(authentication.ws).on('connection', (socket) => {
+   EventsController.connection(io, socket);
+});
 
 (async function startServers() {
    try {
@@ -29,7 +31,7 @@ io.use(authentication.ws).on('connection', EventsController.connection);
       httpServer.listen(port, () => {
          console.log(`Server started on port ${port}.`);
       });
-   } catch (e) {
+   } catch (e: any) {
       throw new Error(e);
    }
 })();
@@ -86,7 +88,7 @@ process.on('SIGTERM', () => {
    });
 });
 
-export { io, httpServer };
+export { httpServer };
 
 // import { CharacterActions } from './character/characterActions';
 // import { CharacterCreator } from './character/characterCreator';

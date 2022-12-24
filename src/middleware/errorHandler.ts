@@ -1,5 +1,7 @@
+import { Request, Response, NextFunction } from 'express';
+
 class ApplicationError extends Error {
-   constructor(message) {
+   constructor(message: string) {
       super(message);
       // name is set to the name of the class
       this.name = this.constructor.name;
@@ -9,13 +11,13 @@ class ApplicationError extends Error {
 class ValidationError extends ApplicationError {
    public cause: any;
 
-   constructor(message, cause?) {
+   constructor(message: string, cause?: any) {
       super(message);
       this.cause = cause;
    }
 }
 
-function errorHandler(err, req, res, next) {
+function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
    if (res.headersSent) {
       return next(err);
    }
