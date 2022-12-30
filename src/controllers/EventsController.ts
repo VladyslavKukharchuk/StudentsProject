@@ -1,5 +1,8 @@
 import { EventService } from '../services/EventService';
 import { Event } from '../middleware/event';
+import { EventEmitter } from 'events';
+import { errorHandlerWS } from '../middleware/errorHandler';
+const myEmitter = new EventEmitter();
 
 class EventsController {
    // получаем класс юзера
@@ -31,7 +34,8 @@ class EventsController {
          await EventService.attack(req.userId)
             .then((updatedUser) => io.sockets.emit('message', updatedUser))
             .catch((err) => {
-               throw new Error(err);
+               myEmitter.emit('error', err);
+               // throw new Error(err);
             });
       });
 
@@ -45,7 +49,8 @@ class EventsController {
          await EventService.ability(req.userId)
             .then((updatedUser) => io.sockets.emit('message', updatedUser))
             .catch((err) => {
-               throw new Error(err);
+               myEmitter.emit('error', err);
+               // throw new Error(err);
             });
       });
 
@@ -59,7 +64,8 @@ class EventsController {
          await EventService.message(req.message)
             .then((message) => io.sockets.emit('message', message))
             .catch((err) => {
-               throw new Error(err);
+               myEmitter.emit('error', err);
+               // throw new Error(err);
             });
       });
 
@@ -72,8 +78,14 @@ class EventsController {
          await EventService.restore()
             .then((updatedUser) => socket.emit('ability', updatedUser))
             .catch((err) => {
-               throw new Error(err);
+               myEmitter.emit('error', err);
+               // throw new Error(err);
             });
+      });
+
+      myEmitter.on('error', (err) => {
+         console.log('Відбулася помилка');
+         errorHandlerWS(err, socket);
       });
 
       // отключение
@@ -85,4 +97,4 @@ class EventsController {
    }
 }
 
-export { EventsController };
+export { EventsController, myEmitter };

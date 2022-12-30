@@ -25,6 +25,13 @@ io.use(authentication.ws).on('connection', (socket) => {
    EventsController.connection(io, socket);
 });
 
+import { myEmitter } from './controllers/EventsController';
+import { errorHandlerWS } from './middleware/errorHandler';
+myEmitter.on('error_authentication', (err) => {
+   console.log('error_authentication');
+   errorHandlerWS(err);
+});
+
 (async function startServers() {
    try {
       await mongoose.connect(DB_URL);
