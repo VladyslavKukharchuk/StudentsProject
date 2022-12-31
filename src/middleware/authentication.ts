@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { secret } from '../config/jwtKey';
 import { Response, NextFunction } from 'express';
-import { myEmitter } from '../controllers/EventsController';
+import { myEmitter } from '../app';
 
 class authentication {
    static http(req: any, res: Response, next: NextFunction) {
@@ -34,7 +34,7 @@ class authentication {
          console.log(authHeader);
          next();
       } catch (e) {
-         myEmitter.emit('error_authentication', e);
+         myEmitter.emit('error', e);
          next(e);
       }
    }

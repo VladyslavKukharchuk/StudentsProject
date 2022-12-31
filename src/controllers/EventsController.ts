@@ -1,8 +1,6 @@
 import { EventService } from '../services/EventService';
 import { Event } from '../middleware/event';
-import { EventEmitter } from 'events';
-import { errorHandlerWS } from '../middleware/errorHandler';
-const myEmitter = new EventEmitter();
+import { myEmitter } from '../app';
 
 class EventsController {
    // получаем класс юзера
@@ -22,7 +20,13 @@ class EventsController {
       // получать и различать события
 
       //примітивний middleware
-      socket.use(Event.forOll);
+      socket.use((packet: any, next: any) => {
+         try {
+            Event.forOll(packet, next);
+         } catch (e) {
+            myEmitter.emit('error', e, socket);
+         }
+      });
 
       // атака
       // {
@@ -34,7 +38,7 @@ class EventsController {
          await EventService.attack(req.userId)
             .then((updatedUser) => io.sockets.emit('message', updatedUser))
             .catch((err) => {
-               myEmitter.emit('error', err);
+               myEmitter.emit('error', err, socket);
                // throw new Error(err);
             });
       });
@@ -83,11 +87,6 @@ class EventsController {
             });
       });
 
-      myEmitter.on('error', (err) => {
-         console.log('Відбулася помилка');
-         errorHandlerWS(err, socket);
-      });
-
       // отключение
       // удаляем сессию из mongodb
       // убираем юзера из подписчиков ws сервера
@@ -97,4 +96,4 @@ class EventsController {
    }
 }
 
-export { EventsController, myEmitter };
+export { EventsController };

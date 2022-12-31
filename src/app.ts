@@ -21,15 +21,20 @@ app.use(errorHandler);
 
 // подключение
 // проверяем jwt токен.
-io.use(authentication.ws).on('connection', (socket) => {
+// io.use(authentication.ws).on('connection', (socket) => {
+//    EventsController.connection(io, socket);
+// });
+io.use(authentication.ws);
+
+io.on('connection', (socket) => {
    EventsController.connection(io, socket);
 });
 
-import { myEmitter } from './controllers/EventsController';
+import { EventEmitter } from 'events';
+const myEmitter = new EventEmitter();
 import { errorHandlerWS } from './middleware/errorHandler';
-myEmitter.on('error_authentication', (err) => {
-   console.log('error_authentication');
-   errorHandlerWS(err);
+myEmitter.on('error', (err, socket) => {
+   errorHandlerWS(err, socket);
 });
 
 (async function startServers() {
@@ -95,7 +100,7 @@ process.on('SIGTERM', () => {
    });
 });
 
-export { httpServer };
+export { httpServer, myEmitter };
 
 // import { CharacterActions } from './character/characterActions';
 // import { CharacterCreator } from './character/characterCreator';
