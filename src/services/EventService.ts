@@ -38,7 +38,7 @@ class EventService {
    //  Пересоздаем сессию в mongo
    //  Возвращаем обновленную сессию целевого юзера всем подписчикам
    static async restore() {
-      console.log(`User used restore.`);
+      console.log("User used restore.");
    }
 }
 

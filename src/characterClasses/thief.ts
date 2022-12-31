@@ -1,4 +1,4 @@
-import { Character } from './character';
+import { Character } from "./character";
 
 class Thief extends Character {
    constructor() {
@@ -6,9 +6,9 @@ class Thief extends Character {
       this.healthPoint = 100;
       this.maxHP = 100;
       this.attackPower = 25;
-      this.class = 'Thief';
-      this.attackName = 'Archery Shot';
-      this.abilityName = 'Run Away';
+      this.class = "Thief";
+      this.attackName = "Archery Shot";
+      this.abilityName = "Run Away";
    }
 
    ability(): void {}

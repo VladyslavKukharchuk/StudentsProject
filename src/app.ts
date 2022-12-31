@@ -1,14 +1,18 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { router } from './router';
-import mongoose from 'mongoose';
+import { EventEmitter } from 'events';
 import { errorHandler } from './middleware/errorHandler';
+import { errorHandlerWS } from './middleware/errorHandler';
 import { EventsController } from './controllers/EventsController';
 import { authentication } from './middleware/authentication';
 
-const DB_URL = `mongodb+srv://user:user@cluster0.q8wq4ns.mongodb.net/?retryWrites=true&w=majority`;
+const DB_URL = 'mongodb+srv://user:user@cluster0.q8wq4ns.mongodb.net/?retryWrites=true&w=majority';
 mongoose.set('strictQuery', false);
+
+const myEmitter = new EventEmitter();
 
 const app = express();
 const httpServer = createServer(app);
@@ -30,10 +34,7 @@ io.on('connection', (socket) => {
    EventsController.connection(io, socket);
 });
 
-import { EventEmitter } from 'events';
-const myEmitter = new EventEmitter();
-import { errorHandlerWS } from './middleware/errorHandler';
-myEmitter.on('error_aunt', (err) => {
+myEmitter.on('error', (err) => {
    errorHandlerWS(err);
 });
 

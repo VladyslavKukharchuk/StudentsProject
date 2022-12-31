@@ -1,5 +1,5 @@
-import { UserService } from '../services/UserService';
-import { Request, Response, NextFunction } from 'express';
+import { UserService } from "../services/UserService";
+import { Request, Response, NextFunction } from "express";
 
 class UserController {
    // логин

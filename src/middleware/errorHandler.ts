@@ -39,17 +39,7 @@ function errorHandler(err: Error, req: Request, res: Response, next: NextFunctio
    res.status(500).send('Something went wrong');
 }
 
-function errorHandlerWS(err: Error, socket?: any) {
-   if (err instanceof ValidationError) {
-      console.log('ValidationError');
-      socket.emit('error', { message: err.message, cause: err.cause });
-      return;
-   }
-
-   if (socket) {
-      socket.emit('error', 'An error occurred on the server');
-   }
-
+function errorHandlerWS(err: Error) {
    console.warn('error', '', {
       message: 'Error Handler',
       err,

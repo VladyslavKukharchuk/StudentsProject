@@ -1,5 +1,5 @@
-import { ClassService } from '../services/ClassService';
-import { Request, Response, NextFunction } from 'express';
+import { ClassService } from "../services/ClassService";
+import { Request, Response, NextFunction } from "express";
 
 class ClassController {
    // возвращаем список доступных классов

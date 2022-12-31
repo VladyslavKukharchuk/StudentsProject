@@ -1,17 +1,17 @@
-import { Request, Response, NextFunction } from 'express';
-import { ValidationError } from './errorHandler';
+import { Request, Response, NextFunction } from "express";
+import { ValidationError } from "./errorHandler";
 
 function validationRegistration(req: Request, res: Response, next: NextFunction) {
    const { username, email, password, duplicatePassword } = req.body;
 
    const validUsername = /^[a-z0-9_-]{3,16}$/;
    if (!validUsername.test(username)) {
-      throw new ValidationError('Invalid username', username);
+      throw new ValidationError("Invalid username", username);
    }
 
    const validEmail = /^[A-Z0-9._%+-]+@[A-Z0-9-]+.+.[A-Z]{2,4}$/i;
    if (!validEmail.test(email)) {
-      throw new ValidationError('Invalid email', email);
+      throw new ValidationError("Invalid email", email);
    }
 
    const minPassLength = 5;
@@ -24,7 +24,7 @@ function validationRegistration(req: Request, res: Response, next: NextFunction)
    }
 
    if (password !== duplicatePassword) {
-      throw new ValidationError('Passwords do not match', duplicatePassword);
+      throw new ValidationError("Passwords do not match", duplicatePassword);
    }
 
    next();

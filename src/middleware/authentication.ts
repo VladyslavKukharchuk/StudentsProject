@@ -34,7 +34,7 @@ class authentication {
          console.log(authHeader);
          next();
       } catch (e) {
-         myEmitter.emit('error_aunt', e);
+         myEmitter.emit('error', e);
          next(e);
       }
    }

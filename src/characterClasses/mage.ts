@@ -1,4 +1,4 @@
-import { Character } from './character';
+import { Character } from "./character";
 
 class Mage extends Character {
    constructor() {
@@ -6,9 +6,9 @@ class Mage extends Character {
       this.healthPoint = 80;
       this.maxHP = 80;
       this.attackPower = 100;
-      this.class = 'Mage';
-      this.attackName = 'Fireball';
-      this.abilityName = 'Bewitch';
+      this.class = "Mage";
+      this.attackName = "Fireball";
+      this.abilityName = "Bewitch";
    }
 
    ability(): void {}

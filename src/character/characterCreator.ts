@@ -1,7 +1,7 @@
-import { Thief } from '../characterClasses/thief';
-import { Warrior } from '../characterClasses/warrior';
-import { Mage } from '../characterClasses/mage';
-import { CharacterClasses } from '../config/enums';
+import { Thief } from "../characterClasses/thief";
+import { Warrior } from "../characterClasses/warrior";
+import { Mage } from "../characterClasses/mage";
+import { CharacterClasses } from "../config/enums";
 
 /**
  * The CharacterActions class is our Factory
@@ -17,7 +17,7 @@ class CharacterCreator {
             case CharacterClasses.Warrior:
                 return new Warrior();
             default:
-                throw new Error('An invalid character class name.');
+                throw new Error("An invalid character class name.");
         }
     }
 }

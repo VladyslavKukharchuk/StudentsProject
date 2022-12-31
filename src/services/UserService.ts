@@ -1,15 +1,15 @@
-import User from '../models/User';
+import User from "../models/User";
 
-import jwt from 'jsonwebtoken';
-import { secret } from '../config/jwtKey';
+import jwt from "jsonwebtoken";
+import { secret } from "../config/jwtKey";
 
-import { ValidationError } from '../middleware/errorHandler';
+import { ValidationError } from "../middleware/errorHandler";
 
 const generateAccessToken = (id: any) => {
    const payload = {
       id,
    };
-   return jwt.sign(payload, secret, { expiresIn: '24h' });
+   return jwt.sign(payload, secret, { expiresIn: "24h" });
 };
 
 class UserService {
@@ -21,7 +21,7 @@ class UserService {
       const user = await User.findOne({ email });
       const validPassword = await User.findOne({ password });
       if (!(user && validPassword)) {
-         throw new ValidationError('Incorrect email or password');
+         throw new ValidationError("Incorrect email or password");
       }
       const token = generateAccessToken(user._id);
       return { token };
@@ -34,7 +34,7 @@ class UserService {
       const { username, email, password, duplicatePassword, id } = user;
       const candidate = await User.findOne({ email });
       if (candidate) {
-         throw new ValidationError('User with this email already exists', email);
+         throw new ValidationError("User with this email already exists", email);
       }
       const newUser = await User.create({ username, email, password, id });
       return newUser;
@@ -45,7 +45,7 @@ class UserService {
    // возвращаем обновленного юзера
    static async update(id: any, user: any) {
       if (!id) {
-         throw new Error('ID is not specified');
+         throw new Error("ID is not specified");
       }
       const updatedUser = await User.findByIdAndUpdate(id, user, { new: true });
       return updatedUser;

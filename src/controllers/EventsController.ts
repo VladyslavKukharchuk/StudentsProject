@@ -1,7 +1,6 @@
 import { EventService } from '../services/EventService';
 import { Event } from '../middleware/event';
 import { myEmitter } from '../app';
-import { errorHandlerWS } from '../middleware/errorHandler';
 
 class EventsController {
    // получаем класс юзера
@@ -38,9 +37,9 @@ class EventsController {
          // // атака
          // //  Возвращаем измененную сессию целевого юзера всем подписчикам
          await EventService.attack(req.userId)
-            .then((updatedUser) => io.sockets.emit('message', updatedUser))
+            .then((updatedUser) => io.sockets.emit('attack', updatedUser))
             .catch((err) => {
-               myEmitter.emit('error', err, socket);
+               myEmitter.emit('error', err);
                // throw new Error(err);
             });
       });
@@ -53,7 +52,7 @@ class EventsController {
          // применение способности
          //  Возвращаем измененную сессию целевого юзера всем подписчикам
          await EventService.ability(req.userId)
-            .then((updatedUser) => io.sockets.emit('message', updatedUser))
+            .then((updatedUser) => io.sockets.emit('ability', updatedUser))
             .catch((err) => {
                myEmitter.emit('error', err);
                // throw new Error(err);
@@ -87,10 +86,6 @@ class EventsController {
                myEmitter.emit('error', err);
                // throw new Error(err);
             });
-      });
-
-      myEmitter.on('error', (err) => {
-         errorHandlerWS(err, socket);
       });
 
       // отключение
