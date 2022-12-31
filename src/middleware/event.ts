@@ -1,4 +1,5 @@
 import { NextFunction } from 'express';
+import { myEmitter } from '../app';
 
 class Event {
    static forOll([eventType, data]: any, next: NextFunction) {
@@ -29,7 +30,8 @@ class Event {
          }
          next();
       } catch (e) {
-         throw e;
+         myEmitter.emit('error', e);
+         // next(e);
       }
    }
 }

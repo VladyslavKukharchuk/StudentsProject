@@ -1,6 +1,7 @@
 import { EventService } from '../services/EventService';
 import { Event } from '../middleware/event';
 import { myEmitter } from '../app';
+import { errorHandlerWS } from '../middleware/errorHandler';
 
 class EventsController {
    // получаем класс юзера
@@ -20,13 +21,14 @@ class EventsController {
       // получать и различать события
 
       //примітивний middleware
-      socket.use((packet: any, next: any) => {
-         try {
-            Event.forOll(packet, next);
-         } catch (e) {
-            myEmitter.emit('error', e, socket);
-         }
-      });
+      socket.use(Event.forOll);
+      // socket.use((packet: any, next: any) => {
+      //    try {
+      //       Event.forOll(packet, next);
+      //    } catch (e) {
+      //       myEmitter.emit('error', e, socket);
+      //    }
+      // });
 
       // атака
       // {
@@ -85,6 +87,10 @@ class EventsController {
                myEmitter.emit('error', err);
                // throw new Error(err);
             });
+      });
+
+      myEmitter.on('error', (err) => {
+         errorHandlerWS(err, socket);
       });
 
       // отключение

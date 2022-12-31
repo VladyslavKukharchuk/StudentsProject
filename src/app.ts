@@ -33,8 +33,8 @@ io.on('connection', (socket) => {
 import { EventEmitter } from 'events';
 const myEmitter = new EventEmitter();
 import { errorHandlerWS } from './middleware/errorHandler';
-myEmitter.on('error', (err, socket) => {
-   errorHandlerWS(err, socket);
+myEmitter.on('error_aunt', (err) => {
+   errorHandlerWS(err);
 });
 
 (async function startServers() {
