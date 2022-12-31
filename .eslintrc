@@ -6,6 +6,10 @@
     "sourceType": "module"
   },
   "rules": {
-
+    "no-unused-vars": "warn",
+//    "no-console": "warn"
+    "quotes": ["warn", "double"],
+    "prefer-const": "warn",
+    "semi": "warn"
   }
 }
