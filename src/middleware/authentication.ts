@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
-import { secret } from '../config/jwtKey';
+import { TokenServise } from '../services/TokenServise';
+import 'dotenv/config';
 import { Response, NextFunction } from 'express';
 import { myEmitter } from '../app';
 
@@ -10,12 +11,22 @@ class authentication {
       }
 
       try {
-         const authHeader = req.headers.authorization;
-         if (!authHeader) {
-            throw new Error('request without a token');
+         const authorizationHeader = req.headers.authorization;
+         if (!authorizationHeader) {
+            return next(new Error('request without a token'));
          }
-         const token = authHeader.split(' ')[1];
-         req.user = jwt.verify(token, secret);
+
+         const accessToken = authorizationHeader.split(' ')[1];
+         if (!accessToken) {
+            return next(new Error('request without a token'));
+         }
+
+         const userData = TokenServise.validateAccessToken(accessToken);
+         if (!userData) {
+            return next(new Error('request without a token'));
+         }
+
+         req.user = userData;
          next();
       } catch (e) {
          next(e);
@@ -29,7 +40,7 @@ class authentication {
             throw new Error('request without a token');
          }
          const token = authHeader.split(' ')[1];
-         jwt.verify(token, secret);
+         jwt.verify(token, process.env.JWT_ACCESS_SECRET_KEY!);
 
          console.log(authHeader);
          next();

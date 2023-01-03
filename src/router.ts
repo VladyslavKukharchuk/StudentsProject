@@ -10,7 +10,9 @@ const router = express.Router();
 
 router.post("/users/login", UserController.login);
 router.post("/users/new", validationRegistration, UserController.registration);
-router.patch("/users/:id", authentication.http, validationRegistration, UserController.update);
+router.patch("/users/:id", validationRegistration, authentication.http, UserController.update);
+router.get("/users/refresh", UserController.refresh);
+router.post("/users/logout", UserController.logout);
 router.get("/classes", authentication.http, ClassController.getAll);
 
 export {router};

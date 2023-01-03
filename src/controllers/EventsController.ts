@@ -81,7 +81,7 @@ class EventsController {
          // возрождение
          //  Возвращаем обновленную сессию целевого юзера всем подписчикам
          await EventService.restore()
-            .then((updatedUser) => socket.emit('ability', updatedUser))
+            .then((updatedUser) => socket.emit('restore', updatedUser))
             .catch((err) => {
                myEmitter.emit('error', err);
                // throw new Error(err);

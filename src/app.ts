@@ -1,4 +1,6 @@
 import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -9,7 +11,8 @@ import { errorHandlerWS } from './middleware/errorHandler';
 import { EventsController } from './controllers/EventsController';
 import { authentication } from './middleware/authentication';
 
-const DB_URL = 'mongodb+srv://user:user@cluster0.q8wq4ns.mongodb.net/?retryWrites=true&w=majority';
+import 'dotenv/config';
+const DB_URL = process.env.DB_URL!;
 mongoose.set('strictQuery', false);
 
 const myEmitter = new EventEmitter();
@@ -17,9 +20,14 @@ const myEmitter = new EventEmitter();
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer);
-const port = 3000;
+const PORT = process.env.PORT;
 
 app.use(express.json());
+app.use(cookieParser());
+app.use(cors({
+   credentials: true,
+   origin: process.env.CLIENT_URL
+}));
 app.use('/api', router);
 app.use(errorHandler);
 
@@ -34,20 +42,31 @@ io.on('connection', (socket) => {
    EventsController.connection(io, socket);
 });
 
-myEmitter.on('error', (err) => {
-   errorHandlerWS(err);
-});
+myEmitter.on('error', errorHandlerWS);
 
-(async function startServers() {
+// (async function startServers() {
+//    try {
+//       await mongoose.connect(DB_URL);
+//       httpServer.listen(port, () => {
+//          console.log(`Server started on port ${port}.`);
+//       });
+//    } catch (e: any) {
+//       throw new Error(e);
+//    }
+// })();
+
+const start = async () => {
    try {
       await mongoose.connect(DB_URL);
-      httpServer.listen(port, () => {
-         console.log(`Server started on port ${port}.`);
+      httpServer.listen(PORT, () => {
+         console.log(`Server started on port ${PORT}.`);
       });
    } catch (e: any) {
       throw new Error(e);
    }
-})();
+}
+
+start()
 
 //uncaughtException
 process.on('uncaughtException', (err) => {

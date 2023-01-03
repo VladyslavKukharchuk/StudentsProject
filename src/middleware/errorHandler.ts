@@ -36,7 +36,7 @@ function errorHandler(err: Error, req: Request, res: Response, next: NextFunctio
       err,
    });
 
-   res.status(500).send('Something went wrong');
+   res.status(500).send({message: 'Something went wrong on the server'});
 }
 
 function errorHandlerWS(err: Error) {
