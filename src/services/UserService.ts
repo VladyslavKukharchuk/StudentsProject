@@ -30,7 +30,7 @@ class UserService {
    // регистрация
    // создаем запись юзера в postgresSQL
    // возвращаем созданного юзера
-   static async registration(username: any, email: any, password: any, duplicatePassword: any) {
+   static async registration(username: any, email: any, password: any) {
       const candidate = await User.findOne({ email });
       if (candidate) {
          throw ApiError.BadRequest("User with this email already exists");
@@ -49,12 +49,17 @@ class UserService {
    // обновление личных данных(ник, старый пароль, пароль, дубль пароля, id нового класса)
    // обновляем запись в базе данных
    // возвращаем обновленного юзера
-   static async update(id: any, user: any) {
+   static async update(id: any, username: string, email: string, password: string) {
       if (!id) {
          throw new Error("ID is not specified");
       }
-      const updatedUser = await User.findByIdAndUpdate(id, user, { new: true });
-      return updatedUser;
+      const hashPassword = await bcrypt.hash(password, 3);
+
+      const updatedUser = await User.findByIdAndUpdate(id, { username, email, password: hashPassword}, { new: true });
+
+      const userDto = new UserDto(updatedUser);
+
+      return {user: userDto};
    }
 
    static async refresh(refreshToken: any) {
@@ -63,6 +68,7 @@ class UserService {
       }
 
       const userData = TokenServise.validateRefreshToken(refreshToken.refreshToken);
+
       const tokenFromDb = await TokenServise.findToken(refreshToken);
       if(!userData || !tokenFromDb){
          throw ApiError.UnauthorizedError();
