@@ -1,29 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
-
-class ApplicationError extends Error {
-   constructor(message: string) {
-      super(message);
-      // name is set to the name of the class
-      this.name = this.constructor.name;
-   }
-}
-
-class ValidationError extends ApplicationError {
-   public cause: any;
-
-   constructor(message: string, cause?: any) {
-      super(message);
-      this.cause = cause;
-   }
-}
+import ApiError from '../exceptions/ApiError';
 
 function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
    if (res.headersSent) {
       return next(err);
    }
 
-   if (err instanceof ValidationError) {
-      res.status(400).send({ message: err.message, cause: err.cause });
+   if (err instanceof ApiError) {
+      res.status(err.status).send({ message: err.message });
       return;
    }
 
@@ -46,4 +30,4 @@ function errorHandlerWS(err: Error) {
    });
 }
 
-export { errorHandler, errorHandlerWS, ValidationError, ApplicationError };
+export { errorHandler, errorHandlerWS};

@@ -3,6 +3,7 @@ import { TokenServise } from '../services/TokenServise';
 import 'dotenv/config';
 import { Response, NextFunction } from 'express';
 import { myEmitter } from '../app';
+import ApiError from '../exceptions/ApiError';
 
 class authentication {
    static http(req: any, res: Response, next: NextFunction) {
@@ -13,23 +14,23 @@ class authentication {
       try {
          const authorizationHeader = req.headers.authorization;
          if (!authorizationHeader) {
-            return next(new Error('request without a token'));
+            return next(ApiError.UnauthorizedError());
          }
 
          const accessToken = authorizationHeader.split(' ')[1];
          if (!accessToken) {
-            return next(new Error('request without a token'));
+            return next(ApiError.UnauthorizedError());
          }
 
          const userData = TokenServise.validateAccessToken(accessToken);
          if (!userData) {
-            return next(new Error('request without a token'));
+            return next(ApiError.UnauthorizedError());
          }
 
          req.user = userData;
          next();
       } catch (e) {
-         next(e);
+         return next(ApiError.UnauthorizedError());
       }
    }
 

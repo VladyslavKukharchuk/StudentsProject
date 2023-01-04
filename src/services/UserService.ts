@@ -2,7 +2,7 @@ import User from "../models/User";
 import bcrypt from "bcrypt";
 import { UserDto } from '../dtos/UserDto';
 import { TokenServise } from './TokenServise';
-import { ValidationError } from "../middleware/errorHandler";
+import ApiError from '../exceptions/ApiError';
 
 
 class UserService {
@@ -12,12 +12,12 @@ class UserService {
    static async login(email: any, password: any) {
       const user = await User.findOne({ email });
       if (!user) {
-         throw new ValidationError("No user with this email address was found");
+         throw ApiError.BadRequest("No user with this email address was found");
       }
 
       const isPassEquals = await bcrypt.compare(password, user.password);
       if(!isPassEquals){
-         throw new ValidationError("Incorrect password");
+         throw ApiError.BadRequest("Incorrect password");
       }
 
       const userDto = new UserDto(user);
@@ -33,7 +33,7 @@ class UserService {
    static async registration(username: any, email: any, password: any, duplicatePassword: any) {
       const candidate = await User.findOne({ email });
       if (candidate) {
-         throw new ValidationError("User with this email already exists", email);
+         throw ApiError.BadRequest("User with this email already exists");
       }
       const hashPassword = await bcrypt.hash(password, 3);
 
@@ -59,13 +59,13 @@ class UserService {
 
    static async refresh(refreshToken: any) {
       if (!refreshToken) {
-         throw new Error("The user is not authorized");
+         throw ApiError.UnauthorizedError();
       }
 
       const userData = TokenServise.validateRefreshToken(refreshToken.refreshToken);
       const tokenFromDb = await TokenServise.findToken(refreshToken);
       if(!userData || !tokenFromDb){
-         throw new Error("The user is not authorized");
+         throw ApiError.UnauthorizedError();
       }
 
       // @ts-ignore
