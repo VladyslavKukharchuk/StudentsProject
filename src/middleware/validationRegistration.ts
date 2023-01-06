@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import ApiError from '../exceptions/ApiError';
 
-function validationRegistration(req: Request, res: Response, next: NextFunction) {
+function validationUserData(req: Request, res: Response, next: NextFunction) {
    const { username, email, password, duplicatePassword } = req.body;
 
    const validUsername = /^[a-z0-9_-]{3,16}$/;
@@ -30,4 +30,4 @@ function validationRegistration(req: Request, res: Response, next: NextFunction)
    next();
 }
 
-export { validationRegistration };
+export default validationUserData;

@@ -10,4 +10,4 @@ class UserDto {
    }
 }
 
-export { UserDto };
+export default UserDto;

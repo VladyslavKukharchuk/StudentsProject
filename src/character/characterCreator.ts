@@ -1,11 +1,7 @@
-import { Thief } from "../characterClasses/thief";
-import { Warrior } from "../characterClasses/warrior";
-import { Mage } from "../characterClasses/mage";
+import Thief from "../characterClasses/thief";
+import Warrior from "../characterClasses/warrior";
+import Mage from "../characterClasses/mage";
 import { CharacterClasses } from "../config/enums";
-
-/**
- * The CharacterActions class is our Factory
- */
 
 class CharacterCreator {
     static createCharacter(className: CharacterClasses) {
@@ -22,4 +18,4 @@ class CharacterCreator {
     }
 }
 
-export { CharacterCreator };
+export default CharacterCreator;

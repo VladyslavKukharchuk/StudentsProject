@@ -1,4 +1,4 @@
-import { Character } from "./character";
+import Character from "./character";
 
 class Warrior extends Character {
    constructor() {
@@ -14,4 +14,4 @@ class Warrior extends Character {
    ability(): void {}
 }
 
-export { Warrior };
+export default Warrior;

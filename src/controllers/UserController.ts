@@ -1,4 +1,4 @@
-import { UserService } from '../services/UserService';
+import UserService from '../services/UserService';
 import { Request, Response, NextFunction } from 'express';
 
 class UserController {
@@ -56,4 +56,4 @@ class UserController {
    }
 }
 
-export { UserController };
+export default UserController;

@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import 'dotenv/config';
 import Token from "../models/Token";
 
-class TokenServise {
+class TokenService {
    static generateTokens(payload: any) {
       const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET_KEY!, { expiresIn: "1h" });
       const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET_KEY!, { expiresIn: "30d" });
@@ -51,4 +51,4 @@ class TokenServise {
    }
 }
 
-export { TokenServise };
+export default TokenService;

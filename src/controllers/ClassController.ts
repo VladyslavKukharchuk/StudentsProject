@@ -1,4 +1,4 @@
-import { ClassService } from "../services/ClassService";
+import ClassService from "../services/ClassService";
 import { Request, Response, NextFunction } from "express";
 
 class ClassController {
@@ -10,4 +10,4 @@ class ClassController {
    }
 }
 
-export { ClassController };
+export default ClassController;

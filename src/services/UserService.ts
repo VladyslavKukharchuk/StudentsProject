@@ -1,7 +1,7 @@
 import User from "../models/User";
 import bcrypt from "bcrypt";
-import { UserDto } from '../dtos/UserDto';
-import { TokenServise } from './TokenServise';
+import UserDto from '../dtos/UserDto';
+import TokenService from './TokenServiсe';
 import ApiError from '../exceptions/ApiError';
 
 
@@ -21,9 +21,9 @@ class UserService {
       }
 
       const userDto = new UserDto(user);
-      const token = TokenServise.generateTokens({...userDto});
+      const token = TokenService.generateTokens({...userDto});
 
-      await TokenServise.saveToken(userDto.id, token.refreshToken);
+      await TokenService.saveToken(userDto.id, token.refreshToken);
       return {...token, user: userDto};
    }
 
@@ -40,8 +40,8 @@ class UserService {
       const user = await User.create({ username, email, password: hashPassword});
       const userDto = new UserDto(user);
 
-      const token = TokenServise.generateTokens({...userDto});
-      await TokenServise.saveToken(userDto.id, token.refreshToken);
+      const token = TokenService.generateTokens({...userDto});
+      await TokenService.saveToken(userDto.id, token.refreshToken);
 
       return {...token, user: userDto};
    }
@@ -67,9 +67,9 @@ class UserService {
          throw ApiError.UnauthorizedError();
       }
 
-      const userData = TokenServise.validateRefreshToken(refreshToken.refreshToken);
+      const userData = TokenService.validateRefreshToken(refreshToken.refreshToken);
 
-      const tokenFromDb = await TokenServise.findToken(refreshToken);
+      const tokenFromDb = await TokenService.findToken(refreshToken);
       if(!userData || !tokenFromDb){
          throw ApiError.UnauthorizedError();
       }
@@ -77,16 +77,16 @@ class UserService {
       // @ts-ignore
       const user = await User.findById(userData.id);
       const userDto = new UserDto(user);
-      const token = TokenServise.generateTokens({...userDto});
+      const token = TokenService.generateTokens({...userDto});
 
-      await TokenServise.saveToken(userDto.id, token.refreshToken);
+      await TokenService.saveToken(userDto.id, token.refreshToken);
       return {...token, user: userDto};
    }
 
    static async logout(refreshToken: any) {
-      const token = await TokenServise.removeToken(refreshToken);
+      const token = await TokenService.removeToken(refreshToken);
       return token;
    }
 }
 
-export { UserService };
+export default UserService;

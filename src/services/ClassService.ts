@@ -8,4 +8,4 @@ class ClassService {
     }
 }
 
-export {ClassService};
+export default ClassService;

@@ -42,4 +42,4 @@ class EventService {
    }
 }
 
-export { EventService };
+export default EventService;

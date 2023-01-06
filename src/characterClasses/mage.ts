@@ -1,4 +1,4 @@
-import { Character } from "./character";
+import Character from "./character";
 
 class Mage extends Character {
    constructor() {
@@ -14,4 +14,4 @@ class Mage extends Character {
    ability(): void {}
 }
 
-export { Mage };
+export default Mage;

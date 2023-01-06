@@ -1,17 +1,16 @@
 import express from 'express';
 import cors from 'cors';
+import 'dotenv/config';
 import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 import { createServer } from 'http';
-import { Server } from 'socket.io';
 import { router } from './router';
 import { EventEmitter } from 'events';
-import { errorHandler } from './middleware/errorHandler';
-import { errorHandlerWS } from './middleware/errorHandler';
-import { EventsController } from './controllers/EventsController';
-import { authentication } from './middleware/authentication';
+import ErrorHandler from './middleware/errorHandler';
+import EventsController from './controllers/EventsController';
+import authentication from './middleware/authentication';
 
-import 'dotenv/config';
+
 const DB_URL = process.env.DB_URL!;
 mongoose.set('strictQuery', false);
 
@@ -19,7 +18,7 @@ const myEmitter = new EventEmitter();
 
 const app = express();
 const httpServer = createServer(app);
-const io = new Server(httpServer);
+const io = require('socket.io')(httpServer, {cors: {origin: "*"}});
 const PORT = process.env.PORT;
 
 app.use(express.json());
@@ -29,31 +28,17 @@ app.use(cors({
    origin: process.env.CLIENT_URL
 }));
 app.use('/api', router);
-app.use(errorHandler);
+app.use(ErrorHandler.http);
 
 // подключение
 // проверяем jwt токен.
-// io.use(authentication.ws).on('connection', (socket) => {
-//    EventsController.connection(io, socket);
-// });
 io.use(authentication.ws);
 
-io.on('connection', (socket) => {
+io.on('connection', (socket: any) => {
    EventsController.connection(io, socket);
 });
 
-myEmitter.on('error', errorHandlerWS);
-
-// (async function startServers() {
-//    try {
-//       await mongoose.connect(DB_URL);
-//       httpServer.listen(port, () => {
-//          console.log(`Server started on port ${port}.`);
-//       });
-//    } catch (e: any) {
-//       throw new Error(e);
-//    }
-// })();
+myEmitter.on('error', ErrorHandler.ws);
 
 const start = async () => {
    try {

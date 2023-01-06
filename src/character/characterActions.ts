@@ -1,7 +1,3 @@
-/**
- * The CharacterActions class is our Facade
- */
-
 class CharacterActions {
    static useAttack(hero: any, enemy: any): number | undefined {
       if (hero.characterHP === 0) {
@@ -36,4 +32,4 @@ class CharacterActions {
    }
 }
 
-export { CharacterActions };
+export default CharacterActions;
