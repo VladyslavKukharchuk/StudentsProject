@@ -1,12 +1,14 @@
 class UserDto {
+   id;
    username;
    email;
-   id;
+   class;
 
    constructor(model: any) {
+      this.id = model.id;
       this.username = model.username;
       this.email = model.email;
-      this.id = model._id;
+      this.class = model.class_id
    }
 }
 

@@ -19,7 +19,7 @@ class UserController {
    // проверяем наличие и корректность всех полей
    // возвращаем созданного юзера
    static async registration(req: Request, res: Response, next: NextFunction) {
-      await UserService.registration(req.body.username, req.body.email, req.body.password)
+      await UserService.registration(req.body.username, req.body.email, req.body.password, req.body.characterClass)
          .then((userData) => {
             res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
             res.status(200).json(userData);
@@ -32,7 +32,7 @@ class UserController {
    // валидируем переданные данные
    // возвращаем обновленного юзера
    static async update(req: Request, res: Response, next: NextFunction) {
-      await UserService.update(req.params.id, req.body.username, req.body.email, req.body.password)
+      await UserService.update(Number(req.params.id), req.body.username, req.body.currentPassword, req.body.newPassword, req.body.characterClass)
          .then((updatedUser) => res.status(200).json(updatedUser))
          .catch((err) => next(err));
    }

@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
 import Token from "../models/Token";
+import TokensRepository from '../repositories/TokensRepository';
 
 class TokenService {
    static generateTokens(payload: any) {
@@ -30,13 +31,13 @@ class TokenService {
       }
    }
 
-   static async saveToken(userId: any, refreshToken: any) {
-      const tokenData = await Token.findOne({user: userId})
+   static async saveToken(userId: number, refreshToken: string) {
+      const tokenData = await TokensRepository.getTokenByUserID(userId)
       if (tokenData) {
-         tokenData.refreshToken = refreshToken;
-         return tokenData.save();
+         const token = await TokensRepository.updateToken(userId, refreshToken);
+         return token;
       }
-      const token = await Token.create({user: userId, refreshToken});
+      const token = await TokensRepository.createToken(userId, refreshToken);
       return token;
    }
 

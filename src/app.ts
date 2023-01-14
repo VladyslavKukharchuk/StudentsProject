@@ -9,6 +9,7 @@ import { EventEmitter } from 'events';
 import ErrorHandler from './middleware/errorHandler';
 import EventsController from './controllers/EventsController';
 import authentication from './middleware/authentication';
+import db from './db';
 
 
 const DB_URL = process.env.DB_URL!;
@@ -42,6 +43,7 @@ myEmitter.on('error', ErrorHandler.ws);
 
 const start = async () => {
    try {
+      await db.connect()
       await mongoose.connect(DB_URL);
       httpServer.listen(PORT, () => {
          console.log(`Server started on port ${PORT}.`);
