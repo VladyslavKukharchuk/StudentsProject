@@ -1,8 +1,13 @@
 import db from "../db";
 
 class UserRepository {
+   static async getUserById(id: number){
+      const user = await db.query('SELECT * FROM users WHERE id = $1', [id]);
+      return user.rows[0];
+   }
+
    static async getUserByEmail(email: string){
-      const user = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+      const user = await db.query('SELET * FROM users WHERE email = $1', [email]);
       return user.rows[0];
    }
 

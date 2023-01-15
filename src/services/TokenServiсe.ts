@@ -1,38 +1,37 @@
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
-import Token from "../models/Token";
 import TokensRepository from '../repositories/TokensRepository';
 
 class TokenService {
    static generateTokens(payload: any) {
-      const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET_KEY!, { expiresIn: "1h" });
-      const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET_KEY!, { expiresIn: "30d" });
+      const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET_KEY!, { expiresIn: '1h' });
+      const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET_KEY!, { expiresIn: '30d' });
       return {
          accessToken,
-         refreshToken
-      }
+         refreshToken,
+      };
    }
 
-   static validateAccessToken(token: any){
+   static validateAccessToken(token: any) {
       try {
          const userData = jwt.verify(token, process.env.JWT_ACCESS_SECRET_KEY!);
          return userData;
-      }catch (e){
+      } catch (e) {
          return null;
       }
    }
 
-   static validateRefreshToken(token: any){
+   static validateRefreshToken(token: any) {
       try {
          const userData = jwt.verify(token, process.env.JWT_REFRESH_SECRET_KEY!);
          return userData;
-      }catch (e){
+      } catch (e) {
          return null;
       }
    }
 
    static async saveToken(userId: number, refreshToken: string) {
-      const tokenData = await TokensRepository.getTokenByUserID(userId)
+      const tokenData = await TokensRepository.getTokenByUserID(userId);
       if (tokenData) {
          const token = await TokensRepository.updateToken(userId, refreshToken);
          return token;
@@ -42,12 +41,12 @@ class TokenService {
    }
 
    static async removeToken(refreshToken: any) {
-      const tokenData = await Token.deleteOne(refreshToken);
+      const tokenData = await TokensRepository.deleteToken(refreshToken);
       return tokenData;
    }
 
-   static async findToken(refreshToken: any) {
-      const tokenData = await Token.findOne(refreshToken);
+   static async findToken(refreshToken: string) {
+      const tokenData = await TokensRepository.getTokenByTokenData(refreshToken);
       return tokenData;
    }
 }

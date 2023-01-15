@@ -1,4 +1,3 @@
-import User from '../models/User';
 import bcrypt from 'bcrypt';
 import UserDto from '../dtos/UserDto';
 import TokenService from './TokenServiсe';
@@ -33,6 +32,8 @@ class UserService {
    // возвращаем созданного юзера
    static async registration(username: string, email: string, password: string, characterClass: number) {
       const candidate = await UserRepository.getUserByEmail(email);
+      console.log(candidate)
+
       if (candidate) {
          throw ApiError.BadRequest('User with this email already exists');
       }
@@ -79,13 +80,14 @@ class UserService {
 
       const userData = TokenService.validateRefreshToken(refreshToken.refreshToken);
 
-      const tokenFromDb = await TokenService.findToken(refreshToken);
+      const tokenFromDb = await TokenService.findToken(refreshToken.refreshToken);
+
       if (!userData || !tokenFromDb) {
          throw ApiError.UnauthorizedError();
       }
 
       // @ts-ignore
-      const user = await User.findById(userData.id);
+      const user = await UserRepository.getUserById(userData.id);
       const userDto = new UserDto(user);
       const token = TokenService.generateTokens({ ...userDto });
 
@@ -94,7 +96,7 @@ class UserService {
    }
 
    static async logout(refreshToken: any) {
-      const token = await TokenService.removeToken(refreshToken);
+      const token = await TokenService.removeToken(refreshToken.refreshToken);
       return token;
    }
 }

@@ -3,25 +3,25 @@
 CREATE TABLE classes
 (
     id          INTEGER PRIMARY KEY,
-    name        VARCHAR(50) NOT NULL UNIQUE,
-    health      INTEGER     NOT NULL,
-    damage      INTEGER     NOT NULL,
-    attack_type VARCHAR(50) NOT NULL,
-    ability     VARCHAR(50) NOT NULL,
-    created_at  DATE        NOT NULL,
-    updated_at  DATE        NOT NULL
+    name        VARCHAR(50)  NOT NULL UNIQUE,
+    health      INTEGER      NOT NULL,
+    damage      INTEGER      NOT NULL,
+    attack_type VARCHAR(50)  NOT NULL,
+    ability     VARCHAR(50)  NOT NULL,
+    created_at  TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_at  TIMESTAMP(0) NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE users
 (
-    id         BIGSERIAL PRIMARY KEY,
+    id         SERIAL PRIMARY KEY,
     username   VARCHAR(50)  NOT NULL,
     email      VARCHAR(50)  NOT NULL UNIQUE,
     password   VARCHAR(100) NOT NULL,
     class_id   INTEGER      NOT NULL,
     FOREIGN KEY (class_id) REFERENCES classes (id),
-    created_at DATE         NOT NULL,
-    updated_at DATE         NOT NULL
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE tokens

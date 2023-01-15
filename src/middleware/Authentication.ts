@@ -5,7 +5,7 @@ import { Response, NextFunction } from 'express';
 import { myEmitter } from '../app';
 import ApiError from '../exceptions/ApiError';
 
-class authentication {
+class Authentication {
    static http(req: any, res: Response, next: NextFunction) {
       if (req.method === 'OPTIONS') {
          next();
@@ -52,4 +52,4 @@ class authentication {
    }
 }
 
-export default authentication;
+export default Authentication;
