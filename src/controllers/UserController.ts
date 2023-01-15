@@ -38,7 +38,7 @@ class UserController {
    }
 
    static async refresh(req: Request, res: Response, next: NextFunction) {
-      await UserService.refresh(req.cookies)
+      await UserService.refresh(req.cookies.refreshToken)
          .then((userData) => {
             res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
             res.status(200).json(userData);
@@ -47,7 +47,7 @@ class UserController {
    }
 
    static async logout(req: Request, res: Response, next: NextFunction) {
-      await UserService.logout(req.cookies)
+      await UserService.logout(req.cookies.refreshToken)
          .then((token) => {
             res.clearCookie('refreshToken');
             res.status(200).json(token);

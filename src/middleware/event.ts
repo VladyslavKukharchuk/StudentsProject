@@ -3,11 +3,13 @@ import { myEmitter } from "../app";
 
 class Event {
    static forOll([eventType, data]: any, next: NextFunction) {
+      console.log(eventType)
+      console.log(data)
       try {
          switch (eventType) {
             case "attack":
                if (typeof data.userId !== "number") {
-                  return new Error("Id must be a number");
+                  throw new Error("Id must be a number");
                }
                break;
             case "ability":
@@ -31,7 +33,6 @@ class Event {
          next();
       } catch (e) {
          myEmitter.emit("error", e);
-         // next(e);
       }
    }
 }

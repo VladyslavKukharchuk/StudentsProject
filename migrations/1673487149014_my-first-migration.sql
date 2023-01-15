@@ -36,51 +36,39 @@ INSERT INTO classes (id,
                      health,
                      damage,
                      attack_type,
-                     ability,
-                     created_at,
-                     updated_at)
+                     ability)
 VALUES (0,
         'Thief',
         100,
         25,
         'Archery Shot',
-        'Run Away',
-        NOW(),
-        NOW());
+        'Run Away');
 
 INSERT INTO classes (id,
                      name,
                      health,
                      damage,
                      attack_type,
-                     ability,
-                     created_at,
-                     updated_at)
+                     ability)
 VALUES (1,
         'Mage',
         80,
         100,
         'Fireball',
-        'Bewitch',
-        NOW(),
-        NOW());
+        'Bewitch');
 
 INSERT INTO classes (id,
                      name,
                      health,
                      damage,
                      attack_type,
-                     ability,
-                     created_at,
-                     updated_at)
+                     ability)
 VALUES (2,
         'Warrior',
         200,
         50,
         'Sword Strike',
-        'Defense',
-        NOW(),
-        NOW());
+        'Defense');
 
 -- Down Migration
 

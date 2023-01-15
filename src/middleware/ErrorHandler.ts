@@ -12,7 +12,7 @@ class ErrorHandler {
          return;
       }
 
-      console.warn('error', '', {
+      console.warn('httpError', '', {
          message: 'Error Handler',
          action: `${req.method} : ${req.url}`,
          body: {
@@ -21,14 +21,21 @@ class ErrorHandler {
          err,
       });
 
-      res.status(500).send({message: 'Something went wrong on the server'});
+      res.status(500).send({ message: 'Something went wrong on the server' });
    }
 
-   static ws(err: Error) {
-      console.warn('error', '', {
+   static ws(err: Error, next: NextFunction) {
+      if (err instanceof ApiError) {
+         next({ message: err.message });
+         return;
+      }
+
+      console.warn('WsError', '', {
          message: 'Error Handler',
          err,
       });
+
+      next({ message: 'Something went wrong on the server' });
    }
 }
 

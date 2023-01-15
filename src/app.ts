@@ -11,7 +11,6 @@ import EventsController from './controllers/EventsController';
 import authentication from './middleware/authentication';
 import db from './db';
 
-
 const DB_URL = process.env.DB_URL!;
 mongoose.set('strictQuery', false);
 
@@ -19,14 +18,14 @@ const myEmitter = new EventEmitter();
 
 const app = express();
 const httpServer = createServer(app);
-const io = require('socket.io')(httpServer, {cors: {origin: "*"}});
+const io = require('socket.io')(httpServer, { cors: { origin: '*' } });
 const PORT = process.env.PORT;
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
    credentials: true,
-   origin: process.env.CLIENT_URL
+   origin: process.env.CLIENT_URL,
 }));
 app.use('/api', router);
 app.use(ErrorHandler.http);
@@ -43,7 +42,7 @@ myEmitter.on('error', ErrorHandler.ws);
 
 const start = async () => {
    try {
-      await db.connect()
+      await db.connect();
       await mongoose.connect(DB_URL);
       httpServer.listen(PORT, () => {
          console.log(`Server started on port ${PORT}.`);
@@ -51,9 +50,9 @@ const start = async () => {
    } catch (e: any) {
       throw new Error(e);
    }
-}
+};
 
-start()
+start();
 
 //uncaughtException
 process.on('uncaughtException', (err) => {
@@ -97,6 +96,11 @@ process.on('SIGTERM', () => {
    console.log('Closing http server.');
    httpServer.close(() => {
       console.log('Http server closed.');
+      console.log('Closing connections with PQ server.');
+      db.end(() => {
+         console.log('PG connections closed.');
+      });
+      console.log('Closing connection with MongoDb server.');
       mongoose.connection.close(false, () => {
          console.log('MongoDb connection closed.');
          process.exit(0);

@@ -16,9 +16,9 @@ class EventsController {
       // подписываем текущего юзера на вебсокет
       // отправляем сессии всех активных пользователей
       // отправляем кеш последних 10 сообщений из Redis
-      socket.on("join", (id: string, username: string) => {
+      socket.on('join', (id: string, username: string) => {
 
-         io.sockets.emit('someoneJoin', {data : id,username})
+         io.sockets.emit('someoneJoin', { data: id, username });
 
          // получать и различать события
 
@@ -63,7 +63,7 @@ class EventsController {
             // сообщение
             //  Отправляем сообщение всем подписчикам
             await EventService.message(req.message)
-               .then((userMessage) => io.sockets.emit('message', {data : {message: userMessage}}))
+               .then((userMessage) => io.sockets.emit('message', { data: { message: userMessage } }))
                .catch((err) => {
                   myEmitter.emit('error', err);
                   // throw new Error(err);
@@ -75,7 +75,7 @@ class EventsController {
          // }
          socket.on('restore', async () => {
             // возрождение
-            //  Возвращаем обновленную сессию целевого юзера всем подписчикам
+            // Возвращаем обновленную сессию целевого юзера всем подписчикам
             await EventService.restore()
                .then((updatedUser) => socket.emit('restore', updatedUser))
                .catch((err) => {
@@ -89,11 +89,10 @@ class EventsController {
          // убираем юзера из подписчиков ws сервера
          socket.on('disconnect', (reason: any) => {
             console.log(reason);
-            io.sockets.emit('someoneDisconnect', {data : id, username})
+            io.sockets.emit('someoneDisconnect', { data: id, username });
          });
-      })
+      });
    }
-
 }
 
 export default EventsController;

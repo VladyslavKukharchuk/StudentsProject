@@ -32,7 +32,6 @@ class UserService {
    // возвращаем созданного юзера
    static async registration(username: string, email: string, password: string, characterClass: number) {
       const candidate = await UserRepository.getUserByEmail(email);
-      console.log(candidate)
 
       if (candidate) {
          throw ApiError.BadRequest('User with this email already exists');
@@ -73,14 +72,14 @@ class UserService {
       return { user: userDto };
    }
 
-   static async refresh(refreshToken: any) {
+   static async refresh(refreshToken: string) {
       if (!refreshToken) {
          throw ApiError.UnauthorizedError();
       }
 
-      const userData = TokenService.validateRefreshToken(refreshToken.refreshToken);
+      const userData = TokenService.validateRefreshToken(refreshToken);
 
-      const tokenFromDb = await TokenService.findToken(refreshToken.refreshToken);
+      const tokenFromDb = await TokenService.findToken(refreshToken);
 
       if (!userData || !tokenFromDb) {
          throw ApiError.UnauthorizedError();
@@ -95,8 +94,8 @@ class UserService {
       return { ...token, user: userDto };
    }
 
-   static async logout(refreshToken: any) {
-      const token = await TokenService.removeToken(refreshToken.refreshToken);
+   static async logout(refreshToken: string) {
+      const token = await TokenService.removeToken(refreshToken);
       return token;
    }
 }
