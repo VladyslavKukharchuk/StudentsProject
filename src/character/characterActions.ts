@@ -1,34 +1,30 @@
 class CharacterActions {
-   static useAttack(hero: any, enemy: any): number | undefined {
-      if (hero.characterHP === 0) {
+   static useAttack(userClass: any, target: any, hero: any) {
+      if (hero.hp === 0) {
          throw new Error("You are dead, if you want to continue the fight, first relive!");
       }
 
-      if (enemy.characterHP === 0) {
+      if (target.hp === 0) {
          throw new Error("Your opponent is already dead, you can attack another!");
       }
 
-      if (enemy.characterHP - hero.characterAP < 0) {
-         return hero.finishTheEnemy(enemy);
-      }
-
-      hero.attack(enemy);
+      return userClass.attack(target);
    }
 
-   static useAbility(hero: any): void {
-      if (hero.characterHP === 0) {
+   static useAbility(userClass: any, target: any, hero: any) {
+      if (hero.hp === 0) {
          throw new Error("You are dead, if you want to continue the fight, first relive!");
       }
 
-      hero.ability();
+      return userClass.ability(target, hero);
    }
 
-   static useRelive(hero: any): void {
-      if (hero.characterHP !== 0) {
-         throw new Error("Your character is still alive, you can continue the battle!!!");
+   static useRelive(userClass: any, hero: any) {
+      if (hero.hp !== 0) {
+         throw new Error("Your character is still alive, you can continue the battle!");
       }
 
-      hero.relive();
+      userClass.relive();
    }
 }
 

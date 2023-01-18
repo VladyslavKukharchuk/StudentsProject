@@ -6,6 +6,11 @@ class UserRepository {
       return user.rows[0];
    }
 
+   static async getUserClassByID(id: number){
+      const user = await db.query('SELECT username, class_id, name, health, damage, attack_type, ability  FROM users INNER JOIN classes ON users.id = $1 and classes.id = users.class_id', [id]);
+      return user.rows[0];
+   }
+
    static async getUserByEmail(email: string){
       const user = await db.query('SELECT * FROM users WHERE email = $1', [email]);
       return user.rows[0];

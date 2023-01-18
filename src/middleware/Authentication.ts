@@ -35,14 +35,12 @@ class Authentication {
       }
    }
 
-   static ws(socket: any, next: any) {
+   static ws(accessToken: any) {
       try {
-         const authorizationHeader = socket.handshake.headers.access_token;
-         checkAccessToken(authorizationHeader);
-
-         next();
+         checkAccessToken(accessToken);
+         return true;
       } catch (e) {
-         myEmitter.emit('error', e);
+         throw e;
       }
    }
 }

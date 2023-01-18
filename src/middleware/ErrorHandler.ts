@@ -24,9 +24,9 @@ class ErrorHandler {
       res.status(500).send({ message: 'Something went wrong on the server' });
    }
 
-   static ws(err: Error, next: NextFunction) {
+   static ws(err: any, ws: any) {
       if (err instanceof ApiError) {
-         next({ message: err.message });
+         ws.send({ message: err.message });
          return;
       }
 
@@ -35,7 +35,8 @@ class ErrorHandler {
          err,
       });
 
-      next({ message: 'Something went wrong on the server' });
+      ws.send({ message: 'Something went wrong on the server' });
+      return;
    }
 }
 

@@ -1,7 +1,20 @@
-enum CharacterClasses {
+enum CharacterClassesEnum {
     Thief,
     Mage,
     Warrior,
 }
 
-export { CharacterClasses };
+enum EventTypeEnum {
+    attack,
+    ability,
+    message,
+    restore
+}
+
+enum UserStatusesEnum {
+    enchanted,
+    inHiding,
+    isDefended
+}
+
+export { CharacterClassesEnum, EventTypeEnum, UserStatusesEnum };

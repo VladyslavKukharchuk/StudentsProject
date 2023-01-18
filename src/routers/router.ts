@@ -1,10 +1,10 @@
 import express from "express";
 
-import UserController from "./controllers/UserController";
-import ClassController from "./controllers/ClassController";
-import Validation from "./middleware/Validation";
+import UserController from "../controllers/UserController";
+import ClassController from "../controllers/ClassController";
+import Validation from "../middleware/Validation";
 
-import Authentication from "./middleware/Authentication";
+import Authentication from "../middleware/Authentication";
 
 const router = express.Router();
 
@@ -15,4 +15,4 @@ router.get("/users/refresh", UserController.refresh);
 router.post("/users/logout", UserController.logout);
 router.get("/classes", Authentication.http, ClassController.getAll);
 
-export {router};
+export default router;

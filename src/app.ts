@@ -4,12 +4,14 @@ import 'dotenv/config';
 import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 import { createServer } from 'http';
-import { router } from './router';
+import router from './routers/router';
 import { EventEmitter } from 'events';
 import ErrorHandler from './middleware/errorHandler';
 import EventsController from './controllers/EventsController';
 import authentication from './middleware/authentication';
 import db from './db';
+import { WebSocket } from 'ws';
+import connection from './routers/routesWS';
 
 const DB_URL = process.env.DB_URL!;
 mongoose.set('strictQuery', false);
@@ -18,7 +20,7 @@ const myEmitter = new EventEmitter();
 
 const app = express();
 const httpServer = createServer(app);
-const io = require('socket.io')(httpServer, { cors: { origin: '*' } });
+const wss = new WebSocket.Server({ server: httpServer })
 const PORT = process.env.PORT;
 
 app.use(express.json());
@@ -31,16 +33,10 @@ app.use('/api', router);
 app.use(ErrorHandler.http);
 
 // подключение
-// проверяем jwt токен.
-io.use(authentication.ws);
-
-io.on('connection', (socket: any) => {
-   EventsController.connection(io, socket);
-});
-
+wss.on('connection', connection);
 myEmitter.on('error', ErrorHandler.ws);
 
-const start = async () => {
+async function start() {
    try {
       await db.connect();
       await mongoose.connect(DB_URL);
@@ -50,7 +46,7 @@ const start = async () => {
    } catch (e: any) {
       throw new Error(e);
    }
-};
+}
 
 start();
 
@@ -105,9 +101,9 @@ process.on('SIGTERM', () => {
          console.log('MongoDb connection closed.');
          process.exit(0);
       });
-      io.close(() => {
-         console.log('All connections were closed.');
-      });
+      // io.close(() => {
+      //    console.log('All connections were closed.');
+      // });
    });
 });
 

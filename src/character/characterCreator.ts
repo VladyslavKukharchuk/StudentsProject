@@ -1,17 +1,17 @@
 import Thief from "../characterClasses/thief";
 import Warrior from "../characterClasses/warrior";
 import Mage from "../characterClasses/mage";
-import { CharacterClasses } from "../config/enums";
+import { CharacterClassesEnum } from "../config/enums";
 
 class CharacterCreator {
-    static createCharacter(className: CharacterClasses) {
+    static createCharacter(className: CharacterClassesEnum, classData: any) {
         switch (className) {
-            case CharacterClasses.Thief:
-                return new Thief();
-            case CharacterClasses.Mage:
-                return new Mage();
-            case CharacterClasses.Warrior:
-                return new Warrior();
+            case CharacterClassesEnum.Thief:
+                return new Thief(classData.health, classData.damage, classData.attack_type, classData.ability);
+            case CharacterClassesEnum.Mage:
+                return new Mage(classData.health, classData.damage, classData.attack_type, classData.ability);
+            case CharacterClassesEnum.Warrior:
+                return new Warrior(classData.health, classData.damage, classData.attack_type, classData.ability);
             default:
                 throw new Error("An invalid character class name.");
         }

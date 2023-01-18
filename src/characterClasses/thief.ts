@@ -1,17 +1,45 @@
-import Character from "./character";
+import { UserStatusesEnum } from '../config/enums';
 
-class Thief extends Character {
-   constructor() {
-      super();
-      this.healthPoint = 100;
-      this.maxHP = 100;
-      this.attackPower = 25;
-      this.class = "Thief";
-      this.attackName = "Archery Shot";
-      this.abilityName = "Run Away";
+class Thief {
+   hp: number;
+   damage: number;
+   attackName: string;
+   abilityName: string;
+
+   constructor(health: number, damage: number, attackName: string, abilityName: string) {
+      this.hp = health;
+      this.damage = damage;
+      this.attackName = attackName;
+      this.abilityName = abilityName;
    }
 
-   ability(): void {}
+   attack(enemy: any) {
+      if(enemy.statuses.include(UserStatusesEnum.inHiding)){
+         return new Error("The enemy has in hiding, now impossible to attack him");
+      }
+
+      if(enemy.statuses.include(UserStatusesEnum.isDefended)){
+         return new Error("The enemy is Defended, it is now impossible to attack him");
+      }
+
+      if (enemy.hp - this.damage <= 0) {
+         return 0;
+      }
+
+      return enemy.hp - this.damage;
+   }
+
+   ability(target: any, hero: any) {
+      if(hero.statuses.include(UserStatusesEnum.enchanted)){
+         throw new Error("You have been enchanted, now you will not be able to use your abilities");
+      }
+
+      return UserStatusesEnum.inHiding;
+   }
+
+   relive() {
+      return this.hp;
+   }
 }
 
 export default Thief;

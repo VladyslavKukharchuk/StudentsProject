@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import ApiError from '../exceptions/ApiError';
-import { CharacterClasses } from '../config/enums';
+import { CharacterClassesEnum } from '../config/enums';
 
 const validUsername = /^[a-z0-9_-]{3,16}$/;
 const validEmail = /^[A-Z0-9._%+-]+@[A-Z0-9-]+.+.[A-Z]{2,4}$/i;
@@ -36,7 +36,7 @@ function validationDuplicatePassword(password: string, duplicatePassword: string
 }
 
 function validationCharacterClass(characterClass: number) {
-   if (!(characterClass in CharacterClasses)) {
+   if (!(characterClass in CharacterClassesEnum)) {
       throw ApiError.BadRequest('The selected character class does not exist');
    }
 }
