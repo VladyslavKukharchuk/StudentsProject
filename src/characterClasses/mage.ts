@@ -14,7 +14,7 @@ class Mage {
    }
 
    attack(target: any) {
-      if(target.statuses.include(UserStatusesEnum.inHiding)){
+      if(target.statuses.includes(UserStatusesEnum.inHiding)){
          throw new Error("The enemy has in hiding, now impossible to attack him");
       }
 
@@ -26,12 +26,8 @@ class Mage {
    }
 
    ability(target: any, hero: any) {
-      if(hero.statuses.include(UserStatusesEnum.enchanted)){
+      if(hero.statuses.includes(UserStatusesEnum.enchanted)){
          throw new Error("You have been enchanted, now you will not be able to use your abilities");
-      }
-
-      if (target.hp === 0) {
-         throw new Error("Your opponent is already dead, you can use the ability on another!");
       }
 
       return UserStatusesEnum.enchanted;

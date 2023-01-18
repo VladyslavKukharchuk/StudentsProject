@@ -13,24 +13,24 @@ class Thief {
       this.abilityName = abilityName;
    }
 
-   attack(enemy: any) {
-      if(enemy.statuses.include(UserStatusesEnum.inHiding)){
+   attack(target: any) {
+      if(target.statuses.includes(UserStatusesEnum.inHiding)){
          return new Error("The enemy has in hiding, now impossible to attack him");
       }
 
-      if(enemy.statuses.include(UserStatusesEnum.isDefended)){
+      if(target.statuses.includes(UserStatusesEnum.isDefended)){
          return new Error("The enemy is Defended, it is now impossible to attack him");
       }
 
-      if (enemy.hp - this.damage <= 0) {
+      if (target.hp - this.damage <= 0) {
          return 0;
       }
 
-      return enemy.hp - this.damage;
+      return target.hp - this.damage;
    }
 
    ability(target: any, hero: any) {
-      if(hero.statuses.include(UserStatusesEnum.enchanted)){
+      if(hero.statuses.includes(UserStatusesEnum.enchanted)){
          throw new Error("You have been enchanted, now you will not be able to use your abilities");
       }
 

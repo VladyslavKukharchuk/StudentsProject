@@ -7,16 +7,16 @@ class EventsController {
 
    // атака
    //  Возвращаем измененную сессию целевого юзера всем подписчикам
-   static async attack(targetUserId: number, currentUserId: number) {
-      await EventService.attack(targetUserId, currentUserId)
+   static async attack(userClass: any, targetUserId: number, currentUserId: number) {
+      await EventService.attack(userClass, targetUserId, currentUserId)
          .then((targetUser) => broadcast(targetUser))
          .catch((err) => console.log(err));
    }
 
    // применение способности
    //  Возвращаем измененную сессию целевого юзера всем подписчикам
-   static async ability(targetUserId: number, currentUserId: number) {
-      await EventService.ability(targetUserId, currentUserId)
+   static async ability(userClass: any, targetUserId: number, currentUserId: number) {
+      await EventService.ability(userClass, targetUserId, currentUserId)
          .then((targetUser) => broadcast(targetUser))
          .catch((err) => console.log(err));
    }
@@ -31,8 +31,8 @@ class EventsController {
 
    // возрождение
    // Возвращаем обновленную сессию целевого юзера всем подписчикам
-   static async restore (currentUserId: number) {
-      await EventService.restore(currentUserId)
+   static async restore (userClass: any, currentUserId: number) {
+      await EventService.restore(userClass, currentUserId)
          .then((currentUser) => broadcast(currentUser))
          .catch((err) => console.log(err));
    }

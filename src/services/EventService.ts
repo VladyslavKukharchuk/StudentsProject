@@ -1,4 +1,3 @@
-import UserRepository from '../repositories/UsersRepository';
 import User from '../models/User';
 import { UserStatusesEnum } from '../config/enums';
 import Authentication from '../middleware/Authentication';
@@ -11,8 +10,9 @@ class EventService {
       // проверяем jwt токен.
       Authentication.ws(accessToken)
 
-      // получаем класс юзера
-      const userClass = await UsersRepository.getUserClassByID(userId);
+      //  получаем класс текущего юзера из postgres
+      const { username, class_id, name, health, damage, attack_type, ability } = await UsersRepository.getUserClassByID(userId);
+      const userClass = CharacterCreator.createCharacter(class_id, {health, damage, attack_type, ability})
 
       // создаем сессию в mongodb{
       //  "_id": number;
@@ -20,42 +20,42 @@ class EventService {
       //  "hp": number;
       //  "statuses": number[];
       // }
-      await User.create({ _id: userId, username: userClass.username, hp: userClass.health });
+      await User.create({ _id: userId, username, hp: health });
       const ollUsers = await User.find({});
       return {userClass, ollUsers};
    }
 
    // Действия
    // атака
-   static async attack(targetUserId: number, currentUserId: number) {
+   static async attack(userClass: any, targetUserId: number, currentUserId: number) {
       //  получаем класс текущего юзера из postgres
-      const { class_id, health, damage, attack_type, ability } = await UserRepository.getUserClassByID(currentUserId);
-      const currentUserClass = CharacterCreator.createCharacter(class_id, {health, damage, attack_type, ability})
+      // const { class_id, health, damage, attack_type, ability } = await UserRepository.getUserClassByID(currentUserId);
+      // const currentUserClass = CharacterCreator.createCharacter(class_id, {health, damage, attack_type, ability})
 
       //  получаем сессию текущего юзера из mongo
       const currentUser = await User.findById(currentUserId);
+      console.log(currentUser)
+
 
       //  получаем сессию целевого юзера из mongo
       const targetUser = await User.findById(targetUserId);
-
+      console.log(targetUser)
 
       //  проверяем действующие статусы на целевом юзере и возможно ли провести атаку.
-      const targetUserHp = CharacterActions.useAttack(currentUserClass, targetUser, currentUser);
+      const targetUserHp = CharacterActions.useAttack(userClass, targetUser, currentUser);
       //  Если нет возвращаем ошибку автору
       //  Уменьшаем здоровье целевого юзера и сохраняем изменения в сессии.
       // @ts-ignore
       targetUser.hp = targetUserHp;
       // @ts-ignore
       await targetUser.save()
+      console.log(targetUser)
 
       return targetUser;
    }
 
    // применение способности
-   static async ability(targetUserId: number, currentUserId: number) {
-      //  получаем класс текущего юзера из postgres
-      const { class_id, health, damage, attack_type, ability } = await UserRepository.getUserClassByID(currentUserId);
-      const currentUserClass = CharacterCreator.createCharacter(class_id, {health, damage, attack_type, ability})
+   static async ability(userClass: any, targetUserId: number, currentUserId: number) {
 
       //  получаем сессию текущего юзера из mongo
       const currentUser = await User.findById(currentUserId);
@@ -63,14 +63,11 @@ class EventService {
       //  получаем сессию целевого юзера из mongo
       const targetUser = await User.findById(targetUserId);
 
-
-      const targetUserStatus = CharacterActions.useAbility(currentUserClass, targetUser, currentUser);
+      const targetUserStatus = CharacterActions.useAbility(userClass, targetUser, currentUser);
       //  Если нет возвращаем ошибку автору
       //  Добавляем статус целевому юзеру и сохраняем изменения в сессии.
       // @ts-ignore
-      targetUser.statuses = targetUser.statuses.push(targetUserStatus)
-
-      //  Возвращаем измененную сессию целевого юзера всем подписчикам
+      targetUser.statuses.push(targetUserStatus)
       // @ts-ignore
       await targetUser.save();
 
@@ -91,7 +88,7 @@ class EventService {
    }
 
    // возрождение
-   static async restore(currentUserId: number) {
+   static async restore(userClass: any, currentUserId: number) {
       //  Проверяем нужно ли юзеру возрождение
       const currentUser = await User.findById(currentUserId);
 
@@ -101,16 +98,14 @@ class EventService {
          throw new Error("Your character is still alive, you can continue the battle!");
       }
 
-      //  Если да получаем класс текущего юзера из postgres
-      const { class_id, health, damage, attack_type, ability } = await UserRepository.getUserClassByID(currentUserId);
-      const currentUserClass  = CharacterCreator.createCharacter(class_id, {health, damage, attack_type, ability})
-
-
-      const currentUserHp = CharacterActions.useRelive(currentUserClass, currentUser)
+      const currentUserHp = CharacterActions.useRelive(userClass, currentUser)
       //  Пересоздаем сессию в mongo
+      // @ts-ignore
+      currentUser.hp = currentUserHp;
+      // @ts-ignore
+      currentUser.save();
 
-      //  Возвращаем обновленную сессию целевого юзера всем подписчикам
-      console.log("User used restore.");
+      return currentUser;
    }
 }
 

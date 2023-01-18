@@ -6,15 +6,24 @@ import EventsController from '../controllers/EventsController';
 import EventService from '../services/EventService';
 import User from '../models/User';
 
-const CLIENTS: any = [];
-
-function unicast(userId: number, data: any) {
-   CLIENTS[userId].send(JSON.stringify(data));
+type Client = {
+   userId: number,
+   ws: any
 }
 
-function broadcast(data: any) {
+export const CLIENTS: Client[] = [];
+
+export function unicast(userId: number, data: any): void {
    CLIENTS.forEach((client: any) => {
-      client.send(JSON.stringify(data));
+      if (client.userId === userId) {
+         client.ws.send(JSON.stringify(data));
+      }
+   });
+}
+
+export function broadcast(data: any): void {
+   CLIENTS.forEach((client: any) => {
+      client.ws.send(JSON.stringify(data));
    });
 }
 
@@ -22,30 +31,32 @@ export default function connection(ws: any, req: any) {
    const { id, accessToken } = url.parse(req.url, true).query;
    const userId = Number(id);
 
-   console.log(id);
-   console.log(accessToken);
+   let userClass: object= {};
 
    EventService.newUserProcessing(userId, accessToken)
-      .then(({userClass, ollUsers}) => {
-         console.log(userClass)
+      .then((data) => {
+         userClass = data.userClass;
          // подписываем текущего юзера на вебсокет
-         CLIENTS[userId] = ws;
-         unicast(userId, `Користувач з ID ${userId} Вдало підлючився.`)
+         CLIENTS.push({ userId, ws });
+
+         unicast(userId, `Користувач з ID ${userId} Вдало підлючився.`);
 
          console.log('успішне підключення');
          ws.send('успішне підключення');
          // отправляем сессии всех активных пользователей
-         ws.send(JSON.stringify(ollUsers));
+         ws.send(JSON.stringify(data.ollUsers));
 
          // отправляем кеш последних 10 сообщений из Redis
       })
       .catch((err) => {
          console.log(err);
-         ws.close()
+         ws.close();
       });
 
 
-   ws.on('message', (data: any) => {
+   ws.on('message', (input: any) => {
+      const data = JSON.parse(input);
+      console.log(data);
       switch (data.type) {
          // атака
          // {
@@ -53,14 +64,14 @@ export default function connection(ws: any, req: any) {
          //    "userId": number;
          // }
          case EventTypeEnum.attack:
-            return EventsController.attack(data.userId, userId);
+            return EventsController.attack(userClass, data.userId, userId);
          // применение способности
          // {
          //    "type": EventTypeEnum;
          //    "userId": number;
          // }
          case EventTypeEnum.ability:
-            return EventsController.ability(data.userId, userId);
+            return EventsController.ability(userClass, data.userId, userId);
          // сообщение
          // {
          //    "type": EventTypeEnum;
@@ -73,23 +84,19 @@ export default function connection(ws: any, req: any) {
          //    "type": EventTypeEnum;
          // }
          case EventTypeEnum.restore:
-            return EventsController.restore(userId);
+            return EventsController.restore(userClass, userId);
          default:
 
       }
-
-      console.log(data);
-      ws.send(data);
    });
 
 
    // отключение
-   ws.on('close', () => {
+   ws.on('close', async () => {
       // удаляем сессию из mongodb
-      User.deleteOne({_id: userId});
+      await User.deleteOne({ _id: userId });
       // убираем юзера из подписчиков ws сервера
-      delete CLIENTS[userId];
+      let clientIndex = CLIENTS.findIndex(client => client.userId === userId);
+      CLIENTS.splice(clientIndex, 1);
    });
 }
-
-export { CLIENTS, broadcast, unicast };

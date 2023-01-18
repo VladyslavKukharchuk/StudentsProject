@@ -7,13 +7,18 @@ class CharacterActions {
       if (target.hp === 0) {
          throw new Error("Your opponent is already dead, you can attack another!");
       }
-
+      console.log(target.statuses)
+      console.log(Array.isArray(target.statuses))
       return userClass.attack(target);
    }
 
    static useAbility(userClass: any, target: any, hero: any) {
       if (hero.hp === 0) {
          throw new Error("You are dead, if you want to continue the fight, first relive!");
+      }
+
+      if (target.hp === 0) {
+         throw new Error("Your opponent is already dead, you can use the ability on another!");
       }
 
       return userClass.ability(target, hero);
@@ -24,7 +29,7 @@ class CharacterActions {
          throw new Error("Your character is still alive, you can continue the battle!");
       }
 
-      userClass.relive();
+      return userClass.relive();
    }
 }
 
