@@ -12,9 +12,9 @@ enum EventTypeEnum {
 }
 
 enum UserStatusesEnum {
-    enchanted,
-    inHiding,
-    isDefended
+    Enchant,
+    Escape,
+    Defense
 }
 
 export { CharacterClassesEnum, EventTypeEnum, UserStatusesEnum };

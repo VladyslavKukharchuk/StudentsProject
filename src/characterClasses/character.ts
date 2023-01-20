@@ -1,32 +1,31 @@
-// abstract class Character {
-//    // @ts-ignore
-//    protected healthPoint: number;
-//    // @ts-ignore
-//    protected maxHP: number;
-//    // @ts-ignore
-//    protected attackPower: number;
-//    // @ts-ignore
-//    protected class: string;
-//    // @ts-ignore
-//    protected attackName: string;
-//    // @ts-ignore
-//    protected abilityName: string;
-//
-//    get characterHP(): number {
-//       return this.healthPoint;
-//    }
-//
-//    get characterAP(): number {
-//       return this.attackPower;
-//    }
-//
-//    abstract attack(): any;
-//
-//    abstract ability(): any;
-//
-//    relive(): void {
-//       this.healthPoint = this.maxHP;
-//    }
-// }
-//
-// export default Character;
+abstract class Character {
+   readonly name: string;
+   readonly hp: number;
+   readonly damage: number;
+   readonly attackName: string;
+   readonly abilityName: string;
+
+   constructor(name: string, health: number, damage: number, attackName: string, abilityName: string) {
+      this.name = name;
+      this.hp = health;
+      this.damage = damage;
+      this.attackName = attackName;
+      this.abilityName = abilityName;
+   }
+
+   attack(target: any): number {
+      if (target.hp - this.damage <= 0) {
+         return 0;
+      }
+
+      return target.hp - this.damage;
+   }
+
+   abstract ability(): number;
+
+   relive(): number {
+      return this.hp;
+   }
+}
+
+export default Character;

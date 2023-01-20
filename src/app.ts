@@ -35,7 +35,19 @@ app.use(ErrorHandler.http);
 
 // подключение
 wss.on('connection', connection);
+
+wss.on('error', (err) => {
+   console.error('WS server error!');
+   console.error(err.message);
+});
+
+wss.on('close', async () => {
+   await User.deleteMany({});
+   console.error('WS server close!');
+});
+
 myEmitter.on('error', ErrorHandler.ws);
+
 
 async function start() {
    await db.connect();

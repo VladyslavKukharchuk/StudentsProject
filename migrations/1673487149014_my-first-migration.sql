@@ -42,7 +42,7 @@ VALUES (0,
         100,
         25,
         'Archery Shot',
-        'Run Away');
+        'Escape');
 
 INSERT INTO classes (id,
                      name,
@@ -55,7 +55,7 @@ VALUES (1,
         80,
         100,
         'Fireball',
-        'Bewitch');
+        'Enchant');
 
 INSERT INTO classes (id,
                      name,

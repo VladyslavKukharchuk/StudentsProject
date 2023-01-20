@@ -5,6 +5,8 @@ import { EventTypeEnum } from '../config/enums';
 import EventsController from '../controllers/EventsController';
 import EventService from '../services/EventService';
 import User from '../models/User';
+import Character from '../characterClasses/character';
+
 
 type Client = {
    userId: number,
@@ -28,21 +30,21 @@ export function broadcast(data: any): void {
 }
 
 export default function connection(ws: any, req: any) {
-   const { id, accessToken } = url.parse(req.url, true).query;
+   const accessToken = req.headers.authorization;
+   const { id } = url.parse(req.url, true).query;
    const userId = Number(id);
 
-   let userClass: object= {};
+   let userClass: Character;
 
    EventService.newUserProcessing(userId, accessToken)
       .then((data) => {
          userClass = data.userClass;
+
+         console.log(`Користувач з ID ${userId} Вдало підлючився.`);
+
          // подписываем текущего юзера на вебсокет
          CLIENTS.push({ userId, ws });
 
-         unicast(userId, `Користувач з ID ${userId} Вдало підлючився.`);
-
-         console.log('успішне підключення');
-         ws.send('успішне підключення');
          // отправляем сессии всех активных пользователей
          ws.send(JSON.stringify(data.ollUsers));
 
@@ -57,6 +59,7 @@ export default function connection(ws: any, req: any) {
    ws.on('message', (input: any) => {
       const data = JSON.parse(input);
       console.log(data);
+
       switch (data.type) {
          // атака
          // {
@@ -86,7 +89,7 @@ export default function connection(ws: any, req: any) {
          case EventTypeEnum.restore:
             return EventsController.restore(userClass, userId);
          default:
-
+            throw new Error('You have entered unknown action type');
       }
    });
 

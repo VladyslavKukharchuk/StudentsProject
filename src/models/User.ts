@@ -1,10 +1,17 @@
 import { Schema, model } from 'mongoose';
 
-const User = new Schema({
+export interface IUser {
+   _id: number,
+   username: string,
+   hp: number,
+   statuses: number[]
+}
+
+const User = new Schema<IUser>({
    _id: { type: Number, require: true },
    username: { type: String, required: true },
    hp: { type: Number, required: true },
-   statuses: { type: Array, default: [] },
+   statuses: [Number]
 });
 
 export default model('User', User);
