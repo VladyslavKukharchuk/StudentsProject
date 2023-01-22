@@ -6,6 +6,7 @@ import EventsController from '../controllers/EventsController';
 import EventService from '../services/EventService';
 import User from '../models/User';
 import Character from '../characterClasses/character';
+import Validation from '../middleware/Validation';
 
 
 type Client = {
@@ -27,6 +28,18 @@ export function broadcast(data: any): void {
    CLIENTS.forEach((client: any) => {
       client.ws.send(JSON.stringify(data));
    });
+}
+
+function jsonIsObject(json: any) {
+   try {
+      const data = JSON.parse(json);
+      if (typeof data !== 'object') {
+         new Error();
+      }
+      return data;
+   } catch (e) {
+      throw Error('Invalid data format');
+   }
 }
 
 export default function connection(ws: any, req: any) {
@@ -57,31 +70,40 @@ export default function connection(ws: any, req: any) {
 
 
    ws.on('message', (input: any) => {
-      const data = JSON.parse(input);
-      console.log(data);
+      let userInput: any = {};
 
-      switch (data.type) {
+      try {
+         userInput = jsonIsObject(input);
+         Validation.events(userInput);
+      } catch (e) {
+         // @ts-ignore
+         console.log(e.message);
+      }
+      console.log(userInput);
+
+
+      switch (userInput.type) {
          // атака
          // {
          //    "type": EventTypeEnum;
          //    "userId": number;
          // }
          case EventTypeEnum.attack:
-            return EventsController.attack(userClass, data.userId, userId);
+            return EventsController.attack(userClass, userInput.userId, userId);
          // применение способности
          // {
          //    "type": EventTypeEnum;
          //    "userId": number;
          // }
          case EventTypeEnum.ability:
-            return EventsController.ability(userClass, data.userId, userId);
+            return EventsController.ability(userClass, userInput.userId, userId);
          // сообщение
          // {
          //    "type": EventTypeEnum;
          //    "message": string;
          // }
          case EventTypeEnum.message:
-            return EventsController.message(data.message, userId);
+            return EventsController.message(userInput.message, userId);
          // возрождение
          // {
          //    "type": EventTypeEnum;
@@ -89,7 +111,8 @@ export default function connection(ws: any, req: any) {
          case EventTypeEnum.restore:
             return EventsController.restore(userClass, userId);
          default:
-            throw new Error('You have entered unknown action type');
+            // throw new Error('You have entered unknown action type');
+            console.log('You have entered unknown action type');
       }
    });
 

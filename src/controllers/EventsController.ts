@@ -1,7 +1,5 @@
 import EventService from '../services/EventService';
-import { broadcast, unicast } from '../routers/routesWS';
-import Event from '../middleware/event';
-import { myEmitter } from '../app';
+import { broadcast } from '../routers/routesWS';
 import Character from '../characterClasses/character';
 
 class EventsController {
