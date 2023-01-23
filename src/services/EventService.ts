@@ -5,6 +5,7 @@ import CharacterCreator from '../character/characterCreator';
 import CharacterActions from '../character/characterActions';
 import Character from '../characterClasses/character';
 import { CharacterClassesEnum } from '../config/enums';
+import { BadRequest } from '../exceptions/ApiError';
 
 export interface IClassData {
    username: string,
@@ -23,6 +24,11 @@ class EventService {
 
       //  получаем класс текущего юзера из postgres
       const classData = await UsersRepository.getUserClassByID(userId);
+      console.log(classData)
+      if (!classData){
+         throw new BadRequest("User with this id does not exist")
+      }
+
       const userClass = CharacterCreator.createCharacter(classData.class_id, classData)
 
       // создаем сессию в mongodb{
@@ -41,14 +47,11 @@ class EventService {
    static async attack(userClass: Character, targetUserId: number, currentUserId: number) {
       //  получаем сессию текущего юзера из mongo
       const currentUser = await User.findById(currentUserId);
-      if(!currentUser){
-         throw new Error("Загальний код помилки і інфа в логи")
-      }
 
       //  получаем сессию целевого юзера из mongo
       const targetUser = await User.findById(targetUserId);
       if(!targetUser){
-         throw new Error("Failed to Attack, maybe your target has already left the fight")
+         throw new BadRequest("Failed to Attack, maybe your target has already left the fight")
       }
 
       //  проверяем действующие статусы на целевом юзере и возможно ли провести атаку.
@@ -68,14 +71,11 @@ class EventService {
 
       //  получаем сессию текущего юзера из mongo
       const currentUser = await User.findById(currentUserId);
-      if(!currentUser){
-         throw new Error("Загальний код помилки і інфа в логи")
-      }
 
       //  получаем сессию целевого юзера из mongo
       const targetUser = await User.findById(targetUserId);
       if(!targetUser){
-         throw new Error("Ability failed, your target may have already left the battle")
+         throw new BadRequest("Ability failed, your target may have already left the battle")
       }
 
       const targetUserStatus = CharacterActions.useAbility(userClass, targetUser, currentUser);
@@ -103,13 +103,10 @@ class EventService {
    static async message(message: string, currentUserId: number) {
       //  Проверяем может ли юзер писать сообщения
       const currentUser = await User.findById(currentUserId);
-      if(!currentUser){
-         throw new Error("Загальний код помилки і інфа в логи")
-      }
       // @ts-ignore
       if(currentUser.hp === 0){
          //  Если нет возвращаем ошибку автору
-         throw new Error("You are dead, if you want to write message, first relive!");
+         throw new BadRequest("You are dead, if you want to write message, first relive!");
       }
 
       return message;
@@ -119,14 +116,11 @@ class EventService {
    static async restore(userClass: Character, currentUserId: number) {
       //  Проверяем нужно ли юзеру возрождение
       const currentUser = await User.findById(currentUserId);
-      if(!currentUser){
-         throw new Error("Загальний код помилки і інфа в логи")
-      }
 
       // @ts-ignore
       if(currentUser.hp !== 0){
          //  Если нет возвращаем ошибку автору
-         throw new Error("Your character is still alive, you can continue the battle!");
+         throw new BadRequest("Your character is still alive, you can continue the battle!");
       }
 
       const currentUserHp = CharacterActions.useRelive(userClass, currentUser)

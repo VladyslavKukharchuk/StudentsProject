@@ -1,6 +1,6 @@
 import Joi from 'joi';
 import { CharacterClassesEnum } from '../config/enums';
-import ApiError from '../exceptions/ApiError';
+import { BadRequest } from '../exceptions/ApiError';
 
 export default function registrationValidation(data: object) {
    const registration = Joi.object({
@@ -30,6 +30,6 @@ export default function registrationValidation(data: object) {
    const { error } = registration.validate(data, { abortEarly: true });
    if (error) {
       console.log(error.details);
-      throw ApiError.BadRequest(error.details[0].message);
+      throw new BadRequest(error.details[0].message);
    }
 }

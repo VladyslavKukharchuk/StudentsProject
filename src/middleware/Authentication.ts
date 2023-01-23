@@ -1,21 +1,20 @@
 import TokenService from '../services/TokenServiсe';
 import { Response, NextFunction } from 'express';
-import { myEmitter } from '../app';
-import ApiError from '../exceptions/ApiError';
+import { UnauthorizedError } from '../exceptions/ApiError';
 
 function checkAccessToken(authorizationHeader: any) {
    if (!authorizationHeader) {
-      throw ApiError.UnauthorizedError();
+      throw new UnauthorizedError;
    }
 
    const accessToken = authorizationHeader.split(' ')[1];
    if (!accessToken) {
-      throw ApiError.UnauthorizedError();
+      throw new UnauthorizedError;
    }
 
    const userData = TokenService.validateAccessToken(accessToken);
    if (!userData) {
-      throw ApiError.UnauthorizedError();
+      throw new UnauthorizedError;
    }
 }
 
@@ -38,7 +37,6 @@ class Authentication {
    static ws(accessToken: any) {
       try {
          checkAccessToken(accessToken);
-         return true;
       } catch (e) {
          throw e;
       }

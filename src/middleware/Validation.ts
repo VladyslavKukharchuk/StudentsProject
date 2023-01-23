@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import {  EventTypeEnum } from '../config/enums';
+import { EventTypeEnum } from '../config/enums';
 import {
    abilityValidation,
    attackValidation,

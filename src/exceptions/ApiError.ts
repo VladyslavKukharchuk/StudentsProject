@@ -1,18 +1,23 @@
-class ApiError extends Error {
-   status;
-
-   constructor(status: number, message: string) {
+class BaseError extends Error {
+   httpCode: number;
+   constructor(message: string, httpCode: number) {
       super(message);
-      this.status = status;
-   }
 
-   static UnauthorizedError() {
-      return new ApiError(401, 'User not authorized')
-   }
-
-   static BadRequest(message: string) {
-      return new ApiError(400, message);
+      this.name = this.constructor.name;
+      this.httpCode = httpCode;
    }
 }
 
-export default ApiError;
+class UnauthorizedError extends BaseError {
+   constructor(message = "User not authorized", httpCode = 401) {
+      super(message, httpCode);
+   }
+}
+
+class BadRequest extends BaseError {
+   constructor(message: string, httpCode = 400) {
+      super(message, httpCode);
+   }
+}
+
+export {UnauthorizedError, BadRequest}

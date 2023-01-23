@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import ApiError from '../exceptions/ApiError';
+import {BadRequest, UnauthorizedError} from '../exceptions/ApiError';
 
 class ErrorHandler {
    static http(err: Error, req: Request, res: Response, next: NextFunction) {
@@ -7,13 +7,18 @@ class ErrorHandler {
          return next(err);
       }
 
-      if (err instanceof ApiError) {
-         res.status(err.status).send({ message: err.message });
+      if (err instanceof BadRequest) {
+         res.status(err.httpCode).send({ message: err.message });
+         return;
+      }
+
+      if (err instanceof UnauthorizedError) {
+         res.status(err.httpCode).send({ message: err.message });
          return;
       }
 
       console.warn('httpError', '', {
-         message: 'Error Handler',
+         message: `${err.message}`,
          action: `${req.method} : ${req.url}`,
          body: {
             ...req.body,
@@ -25,17 +30,22 @@ class ErrorHandler {
    }
 
    static ws(err: any, ws: any) {
-      if (err instanceof ApiError) {
-         ws.send({ message: err.message });
+      if (err instanceof BadRequest) {
+         ws.send(JSON.stringify({ message: err.message }));
+         return;
+      }
+
+      if (err instanceof UnauthorizedError) {
+         ws.send(JSON.stringify({ message: err.message }));
          return;
       }
 
       console.warn('WsError', '', {
-         message: 'Error Handler',
+         message: `${err.message}`,
          err,
       });
 
-      ws.send({ message: 'Something went wrong on the server' });
+      ws.send(JSON.stringify({ message: 'Something went wrong on the server' }));
       return;
    }
 }

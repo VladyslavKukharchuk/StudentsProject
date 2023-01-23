@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import { EventTypeEnum } from '../config/enums';
+import { BadRequest } from '../exceptions/ApiError';
 
 function eventTypeValidation(data: object) {
    const eventType = Joi.object({
@@ -14,7 +15,7 @@ function eventTypeValidation(data: object) {
 
    const { error } = eventType.validate(data, { abortEarly: true });
    if (error) {
-      throw new Error(error.details[0].message);
+      throw new BadRequest(error.details[0].message);
    }
 }
 
@@ -39,7 +40,7 @@ function attackValidation(data: object) {
 
    const { error } = attack.validate(data, { abortEarly: true });
    if (error) {
-      throw new Error(error.details[0].message);
+      throw new BadRequest(error.details[0].message);
    }
 }
 
@@ -64,7 +65,7 @@ function abilityValidation(data: object) {
 
    const { error } = ability.validate(data, { abortEarly: true });
    if (error) {
-      throw new Error(error.details[0].message);
+      throw new BadRequest(error.details[0].message);
    }
 }
 
@@ -88,7 +89,7 @@ function messageValidation(data: object) {
 
    const { error } = message.validate(data, { abortEarly: true });
    if (error) {
-      throw new Error(error.details[0].message);
+      throw new BadRequest(error.details[0].message);
    }
 }
 
@@ -107,7 +108,7 @@ function restoreValidation(data: object) {
 
    const { error } = restore.validate(data, { abortEarly: true });
    if (error) {
-      throw new Error(error.details[0].message);
+      throw new BadRequest(error.details[0].message);
    }
 }
 

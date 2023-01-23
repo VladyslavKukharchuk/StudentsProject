@@ -1,13 +1,11 @@
 import url from 'url';
-import ErrorHandler from '../middleware/ErrorHandler';
-import { myEmitter } from '../app';
 import { EventTypeEnum } from '../config/enums';
 import EventsController from '../controllers/EventsController';
 import EventService from '../services/EventService';
 import User from '../models/User';
 import Character from '../characterClasses/character';
 import Validation from '../middleware/Validation';
-
+import ErrorHandler from '../middleware/ErrorHandler';
 
 type Client = {
    userId: number,
@@ -34,11 +32,11 @@ function jsonIsObject(json: any) {
    try {
       const data = JSON.parse(json);
       if (typeof data !== 'object') {
-         new Error();
+         new Error("The received data is not of type object");
       }
       return data;
    } catch (e) {
-      throw Error('Invalid data format');
+      throw e;
    }
 }
 
@@ -64,7 +62,7 @@ export default function connection(ws: any, req: any) {
          // отправляем кеш последних 10 сообщений из Redis
       })
       .catch((err) => {
-         console.log(err);
+         ErrorHandler.ws(err, ws)
          ws.close();
       });
 
@@ -75,44 +73,23 @@ export default function connection(ws: any, req: any) {
       try {
          userInput = jsonIsObject(input);
          Validation.events(userInput);
+
+         switch (userInput.type) {
+            case EventTypeEnum.attack:
+               EventsController.attack(userClass, userInput.userId, userId).catch((e) => ErrorHandler.ws(e, ws));
+               break;
+            case EventTypeEnum.ability:
+               EventsController.ability(userClass, userInput.userId, userId).catch((e) => ErrorHandler.ws(e, ws));
+               break;
+            case EventTypeEnum.message:
+               EventsController.message(userInput.message, userId).catch((e) => ErrorHandler.ws(e, ws));
+               break;
+            case EventTypeEnum.restore:
+               EventsController.restore(userClass, userId).catch((e) => ErrorHandler.ws(e, ws));
+               break;
+         }
       } catch (e) {
-         // @ts-ignore
-         console.log(e.message);
-      }
-      console.log(userInput);
-
-
-      switch (userInput.type) {
-         // атака
-         // {
-         //    "type": EventTypeEnum;
-         //    "userId": number;
-         // }
-         case EventTypeEnum.attack:
-            return EventsController.attack(userClass, userInput.userId, userId);
-         // применение способности
-         // {
-         //    "type": EventTypeEnum;
-         //    "userId": number;
-         // }
-         case EventTypeEnum.ability:
-            return EventsController.ability(userClass, userInput.userId, userId);
-         // сообщение
-         // {
-         //    "type": EventTypeEnum;
-         //    "message": string;
-         // }
-         case EventTypeEnum.message:
-            return EventsController.message(userInput.message, userId);
-         // возрождение
-         // {
-         //    "type": EventTypeEnum;
-         // }
-         case EventTypeEnum.restore:
-            return EventsController.restore(userClass, userId);
-         default:
-            // throw new Error('You have entered unknown action type');
-            console.log('You have entered unknown action type');
+         ErrorHandler.ws(e, ws)
       }
    });
 

@@ -1,6 +1,6 @@
 import Joi from 'joi';
 import { CharacterClassesEnum } from '../config/enums';
-import ApiError from '../exceptions/ApiError';
+import { BadRequest } from '../exceptions/ApiError';
 
 export default function updateValidation(data: object) {
    const update = Joi.object({
@@ -28,6 +28,6 @@ export default function updateValidation(data: object) {
 
    const { error } = update.validate(data, { abortEarly: false });
    if (error) {
-      throw ApiError.BadRequest(error.details[0].message);
+      throw new BadRequest(error.details[0].message);
    }
 }

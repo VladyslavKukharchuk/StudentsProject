@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import UserDto from '../dtos/UserDto';
 import TokenService from './TokenServiсe';
-import ApiError from '../exceptions/ApiError';
+import {UnauthorizedError, BadRequest} from '../exceptions/ApiError';
 import UserRepository from '../repositories/UsersRepository';
 
 
@@ -12,12 +12,12 @@ class UserService {
    static async login(email: string, password: string) {
       const user = await UserRepository.getUserByEmail(email);
       if (!user) {
-         throw ApiError.BadRequest('No user with this email address was found');
+         throw new BadRequest('No user with this email address was found');
       }
 
       const isPassEquals = await bcrypt.compare(password, user.password);
       if (!isPassEquals) {
-         throw ApiError.BadRequest('Incorrect password');
+         throw new BadRequest('Incorrect password');
       }
 
       const userDto = new UserDto(user);
@@ -35,7 +35,7 @@ class UserService {
       const candidate = await UserRepository.getUserByEmail(email);
 
       if (candidate) {
-         throw ApiError.BadRequest('User with this email already exists');
+         throw new BadRequest('User with this email already exists');
       }
       const hashPassword = await bcrypt.hash(password, 3);
 
@@ -61,7 +61,7 @@ class UserService {
 
       const isPassEquals = await bcrypt.compare(currentPassword, password);
       if (!isPassEquals) {
-         throw ApiError.BadRequest('Incorrect password');
+         throw new BadRequest('Incorrect password');
       }
 
       const hashPassword = await bcrypt.hash(newPassword, 3);
@@ -75,7 +75,7 @@ class UserService {
 
    static async refresh(refreshToken: string) {
       if (!refreshToken) {
-         throw ApiError.UnauthorizedError();
+         throw new UnauthorizedError;
       }
 
       const userData = TokenService.validateRefreshToken(refreshToken);
@@ -83,7 +83,7 @@ class UserService {
       const tokenFromDb = await TokenService.findToken(refreshToken);
 
       if (!userData || !tokenFromDb) {
-         throw ApiError.UnauthorizedError();
+         throw new UnauthorizedError;
       }
 
       // @ts-ignore
