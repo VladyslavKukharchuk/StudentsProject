@@ -8,7 +8,7 @@ import ErrorHandler from './middleware/errorHandler';
 import User from './models/User';
 import db from './db';
 import { WebSocket } from 'ws';
-import connection from './routers/routesWS';
+import connection from './webSockets';
 
 const DB_URL = process.env.DB_URL!;
 mongoose.set('strictQuery', false);
@@ -26,7 +26,7 @@ app.use(ErrorHandler.http);
 // подключение
 wss.on('connection', connection);
 
-wss.on('error', (err) => {
+wss.on('error', (err: Error) => {
    console.error('WS server error!');
    console.error(err.message);
 });

@@ -4,18 +4,8 @@ import UsersRepository from '../repositories/UsersRepository';
 import CharacterCreator from '../character/characterCreator';
 import CharacterActions from '../character/characterActions';
 import Character from '../characterClasses/character';
-import { CharacterClassesEnum } from '../config/enums';
 import { BadRequest } from '../exceptions/ApiError';
 
-export interface IClassData {
-   username: string,
-   class_id: CharacterClassesEnum,
-   name: string,
-   health: number,
-   damage: number,
-   attack_type: string,
-   ability: string
-}
 
 class EventService {
    static async newUserProcessing(userId: number, accessToken: string){

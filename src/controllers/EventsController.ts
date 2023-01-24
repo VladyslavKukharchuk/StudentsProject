@@ -1,5 +1,5 @@
 import EventService from '../services/EventService';
-import { broadcast } from '../routers/routesWS';
+import { broadcast } from '../webSockets';
 import Character from '../characterClasses/character';
 
 class EventsController {
