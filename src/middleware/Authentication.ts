@@ -7,12 +7,12 @@ function checkAccessToken(authorizationHeader: any) {
       throw new UnauthorizedError;
    }
 
-   const accessToken = authorizationHeader.split(' ')[1];
-   if (!accessToken) {
+   const token = authorizationHeader.split(' ')[1];
+   if (!token) {
       throw new UnauthorizedError;
    }
 
-   const userData = TokenService.validateAccessToken(accessToken);
+   const userData = TokenService.validateAccessToken(token);
    if (!userData) {
       throw new UnauthorizedError;
    }

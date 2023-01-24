@@ -1,6 +1,5 @@
 import express from 'express';
 import 'dotenv/config';
-import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 import { createServer } from 'http';
 import router from './routers/router';
@@ -19,7 +18,6 @@ const wss = new WebSocket.Server({ server: httpServer });
 const PORT = process.env.PORT;
 
 app.use(express.json());
-app.use(cookieParser());
 app.use('/api', router);
 app.use(ErrorHandler.http);
 

@@ -8,7 +8,6 @@ class UserController {
    static async login(req: Request, res: Response, next: NextFunction) {
       await UserService.login(req.body.email, req.body.password)
          .then((userData) => {
-            res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
             res.status(200).json(userData);
          })
          .catch((err) => next(err));
@@ -21,7 +20,6 @@ class UserController {
    static async registration(req: Request, res: Response, next: NextFunction) {
       await UserService.registration(req.body.username, req.body.email, req.body.password, req.body.characterClass)
          .then((userData) => {
-            res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
             res.status(200).json(userData);
          })
          .catch((err) => next(err));
@@ -34,24 +32,6 @@ class UserController {
    static async update(req: Request, res: Response, next: NextFunction) {
       await UserService.update(Number(req.params.id), req.body.username, req.body.currentPassword, req.body.newPassword, req.body.characterClass)
          .then((updatedUser) => res.status(200).json(updatedUser))
-         .catch((err) => next(err));
-   }
-
-   static async refresh(req: Request, res: Response, next: NextFunction) {
-      await UserService.refresh(req.cookies.refreshToken)
-         .then((userData) => {
-            res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
-            res.status(200).json(userData);
-         })
-         .catch((err) => next(err));
-   }
-
-   static async logout(req: Request, res: Response, next: NextFunction) {
-      await UserService.logout(req.cookies.refreshToken)
-         .then((token) => {
-            res.clearCookie('refreshToken');
-            res.status(200).json(token);
-         })
          .catch((err) => next(err));
    }
 }

@@ -1,8 +1,35 @@
 import EventService from '../services/EventService';
-import { broadcast } from '../webSockets';
+import { broadcast, CLIENTS } from '../webSockets';
 import Character from '../characterClasses/character';
+import url from 'url';
 
 class EventsController {
+
+   // подключение
+   // подписываем текущего юзера на вебсокет
+   // отправляем сессии всех активных пользователей
+   // отправляем кеш последних 10 сообщений из Redis
+   static async connection(ws: any, req: any) {
+      const parsedUrl = url.parse(req.url, true).query;
+      const id = Number(parsedUrl.id);
+      const accessToken = req.headers.authorization;
+      await EventService.connection(accessToken, id)
+         .then(({newClass, ollUsers}) => {
+            console.log(newClass)
+            // подписываем текущего юзера на вебсокет
+            CLIENTS.push({ id, ws });
+
+            // отправляем сессии всех активных пользователей
+            ws.send(JSON.stringify(ollUsers));
+
+            // отправляем кеш последних 10 сообщений из Redis
+
+            return {newClass, id}
+         })
+         .catch((err) => {
+            throw err;
+         });
+   }
 
    // атака
    //  Возвращаем измененную сессию целевого юзера всем подписчикам

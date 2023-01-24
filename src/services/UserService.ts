@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import UserDto from '../dtos/UserDto';
 import TokenService from './TokenServiсe';
-import {UnauthorizedError, BadRequest} from '../exceptions/ApiError';
+import { BadRequest} from '../exceptions/ApiError';
 import UserRepository from '../repositories/UsersRepository';
 
 
@@ -23,7 +23,6 @@ class UserService {
       const userDto = new UserDto(user);
 
       const token = TokenService.generateTokens({ ...userDto });
-      await TokenService.saveToken(userDto.id, token.refreshToken);
 
       return { ...token, user: userDto };
    }
@@ -44,7 +43,6 @@ class UserService {
       const userDto = new UserDto(user);
 
       const token = TokenService.generateTokens({ ...userDto });
-      await TokenService.saveToken(userDto.id, token.refreshToken);
 
       return { ...token, user: userDto };
    }
@@ -71,33 +69,6 @@ class UserService {
       const userDto = new UserDto(updatedUser);
 
       return { user: userDto };
-   }
-
-   static async refresh(refreshToken: string) {
-      if (!refreshToken) {
-         throw new UnauthorizedError;
-      }
-
-      const userData = TokenService.validateRefreshToken(refreshToken);
-
-      const tokenFromDb = await TokenService.findToken(refreshToken);
-
-      if (!userData || !tokenFromDb) {
-         throw new UnauthorizedError;
-      }
-
-      // @ts-ignore
-      const user = await UserRepository.getUserById(userData.id);
-      const userDto = new UserDto(user);
-      const token = TokenService.generateTokens({ ...userDto });
-
-      await TokenService.saveToken(userDto.id, token.refreshToken);
-      return { ...token, user: userDto };
-   }
-
-   static async logout(refreshToken: string) {
-      const token = await TokenService.removeToken(refreshToken);
-      return token;
    }
 }
 

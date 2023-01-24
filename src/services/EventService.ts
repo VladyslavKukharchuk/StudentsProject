@@ -8,18 +8,15 @@ import { BadRequest } from '../exceptions/ApiError';
 
 
 class EventService {
-   static async newUserProcessing(userId: number, accessToken: string){
+   static async connection(accessToken: string, id: number){
       // проверяем jwt токен.
-      Authentication.ws(accessToken)
+      Authentication.ws(accessToken);
 
       //  получаем класс текущего юзера из postgres
-      const classData = await UsersRepository.getUserClassByID(userId);
-      console.log(classData)
+      const classData = await UsersRepository.getUserClassByID(id);
       if (!classData){
          throw new BadRequest("User with this id does not exist")
       }
-
-      const userClass = CharacterCreator.createCharacter(classData.class_id, classData)
 
       // создаем сессию в mongodb{
       //  "_id": number;
@@ -27,9 +24,13 @@ class EventService {
       //  "hp": number;
       //  "statuses": number[];
       // }
-      await User.create({ _id: userId, username: classData.username, hp: classData.health });
+      await User.create({ _id: id, username: classData.username, hp: classData.health });
+
+      const newClass = CharacterCreator.createCharacter(classData.class_id, classData);
+
       const ollUsers = await User.find({});
-      return {userClass, ollUsers};
+
+      return {newClass, ollUsers};
    }
 
    // Действия

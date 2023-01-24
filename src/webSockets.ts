@@ -1,13 +1,12 @@
-import url from 'url';
 import Character from './characterClasses/character';
-import EventService from './services/EventService';
 import ErrorHandler from './middleware/ErrorHandler';
 import Validation from './middleware/Validation';
 import User from './models/User';
 import routerWs from './routers/routesWS';
+import eventsController from './controllers/EventsController';
 
 type Client = {
-   userId: number,
+   id: number,
    ws: any
 }
 
@@ -40,25 +39,15 @@ function jsonIsObject(json: any) {
 }
 
 export default function connection(ws: any, req: any) {
-   const accessToken = req.headers.authorization;
-   const { id } = url.parse(req.url, true).query;
-   const userId = Number(id);
-
    let userClass: Character;
+   let userId: number;
 
-   EventService.newUserProcessing(userId, accessToken)
+   eventsController.connection(ws, req)
       .then((data) => {
-         userClass = data.userClass;
-
-         console.log(`Користувач з ID ${userId} Вдало підлючився.`);
-
-         // подписываем текущего юзера на вебсокет
-         CLIENTS.push({ userId, ws });
-
-         // отправляем сессии всех активных пользователей
-         ws.send(JSON.stringify(data.ollUsers));
-
-         // отправляем кеш последних 10 сообщений из Redis
+         console.log(data)
+         userClass = data.newClass;
+         userId = data.id;
+         console.log(`Користувач з ID ${data.id} Вдало підлючився.`);
       })
       .catch((err) => {
          ErrorHandler.ws(err, ws)
@@ -85,7 +74,7 @@ export default function connection(ws: any, req: any) {
       // удаляем сессию из mongodb
       await User.deleteOne({ _id: userId });
       // убираем юзера из подписчиков ws сервера
-      let clientIndex = CLIENTS.findIndex(client => client.userId === userId);
+      let clientIndex = CLIENTS.findIndex(client => client.id === userId);
       CLIENTS.splice(clientIndex, 1);
    });
 }
