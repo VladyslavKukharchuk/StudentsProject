@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
+import { UnauthorizedError } from '../exceptions/ApiError';
 
 class TokenService {
    static generateTokens(payload: any) {
@@ -15,6 +16,22 @@ class TokenService {
          return userData;
       } catch (e) {
          return null;
+      }
+   }
+
+   static checkAccessToken(authorizationHeader: any) {
+      if (!authorizationHeader) {
+         throw new UnauthorizedError;
+      }
+
+      const token = authorizationHeader.split(' ')[1];
+      if (!token) {
+         throw new UnauthorizedError;
+      }
+
+      const userData = TokenService.validateAccessToken(token);
+      if (!userData) {
+         throw new UnauthorizedError;
       }
    }
 }

@@ -26,16 +26,14 @@ class EventService {
       // }
       await User.create({ _id: id, username: classData.username, hp: classData.health });
 
-      const newClass = CharacterCreator.createCharacter(classData.class_id, classData);
-
       const ollUsers = await User.find({});
 
-      return {newClass, ollUsers};
+      return {ollUsers};
    }
 
    // Действия
    // атака
-   static async attack(userClass: Character, targetUserId: number, currentUserId: number) {
+   static async attack(targetUserId: number, currentUserId: number) {
       //  получаем сессию текущего юзера из mongo
       const currentUser = await User.findById(currentUserId);
 
@@ -44,6 +42,10 @@ class EventService {
       if(!targetUser){
          throw new BadRequest("Failed to Attack, maybe your target has already left the fight")
       }
+
+      //  получаем класс текущего юзера из postgres
+      const classData = await UsersRepository.getUserClassByID(currentUserId);
+      const userClass = CharacterCreator.createCharacter(classData.class_id, classData);
 
       //  проверяем действующие статусы на целевом юзере и возможно ли провести атаку.
       const targetUserHp = CharacterActions.useAttack(userClass, targetUser, currentUser);
@@ -58,7 +60,7 @@ class EventService {
    }
 
    // применение способности
-   static async ability(userClass: Character, targetUserId: number, currentUserId: number) {
+   static async ability(targetUserId: number, currentUserId: number) {
 
       //  получаем сессию текущего юзера из mongo
       const currentUser = await User.findById(currentUserId);
@@ -68,6 +70,10 @@ class EventService {
       if(!targetUser){
          throw new BadRequest("Ability failed, your target may have already left the battle")
       }
+
+      //  получаем класс текущего юзера из postgres
+      const classData = await UsersRepository.getUserClassByID(currentUserId);
+      const userClass = CharacterCreator.createCharacter(classData.class_id, classData);
 
       const targetUserStatus = CharacterActions.useAbility(userClass, targetUser, currentUser);
       //  Добавляем статус целевому юзеру и сохраняем изменения в сессии.
@@ -104,7 +110,7 @@ class EventService {
    }
 
    // возрождение
-   static async restore(userClass: Character, currentUserId: number) {
+   static async restore(currentUserId: number) {
       //  Проверяем нужно ли юзеру возрождение
       const currentUser = await User.findById(currentUserId);
 
@@ -113,6 +119,10 @@ class EventService {
          //  Если нет возвращаем ошибку автору
          throw new BadRequest("Your character is still alive, you can continue the battle!");
       }
+
+      //  получаем класс текущего юзера из postgres
+      const classData = await UsersRepository.getUserClassByID(currentUserId);
+      const userClass = CharacterCreator.createCharacter(classData.class_id, classData);
 
       const currentUserHp = CharacterActions.useRelive(userClass, currentUser)
       //  Пересоздаем сессию в mongo

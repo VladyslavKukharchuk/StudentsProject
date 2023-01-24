@@ -24,12 +24,6 @@ CREATE TABLE users
     updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE tokens
-(
-    user_id      INTEGER      NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users (id),
-    refreshToken VARCHAR(250) NOT NULL UNIQUE
-);
 
 INSERT INTO classes (id,
                      name,
@@ -71,8 +65,6 @@ VALUES (2,
         'Defense');
 
 -- Down Migration
-
-DROP TABLE tokens;
 
 DROP TABLE users;
 

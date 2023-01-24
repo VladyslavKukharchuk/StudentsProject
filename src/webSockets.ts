@@ -1,9 +1,9 @@
-import Character from './characterClasses/character';
 import ErrorHandler from './middleware/ErrorHandler';
 import Validation from './middleware/Validation';
 import User from './models/User';
 import routerWs from './routers/routesWS';
 import eventsController from './controllers/EventsController';
+import url from 'url';
 
 type Client = {
    id: number,
@@ -30,7 +30,7 @@ function jsonIsObject(json: any) {
    try {
       const data = JSON.parse(json);
       if (typeof data !== 'object') {
-         new Error("The received data is not of type object");
+         new Error('The received data is not of type object');
       }
       return data;
    } catch (e) {
@@ -39,20 +39,13 @@ function jsonIsObject(json: any) {
 }
 
 export default function connection(ws: any, req: any) {
-   let userClass: Character;
-   let userId: number;
+   const { id } = url.parse(req.url, true).query;
+   const userId = Number(id);
 
-   eventsController.connection(ws, req)
-      .then((data) => {
-         console.log(data)
-         userClass = data.newClass;
-         userId = data.id;
-         console.log(`Користувач з ID ${data.id} Вдало підлючився.`);
-      })
-      .catch((err) => {
-         ErrorHandler.ws(err, ws)
-         ws.close();
-      });
+   eventsController.connection(ws, req).catch((err) => {
+      ErrorHandler.ws(err, ws);
+      ws.close();
+   });
 
 
    ws.on('message', (input: any) => {
@@ -61,10 +54,10 @@ export default function connection(ws: any, req: any) {
       try {
          userInput = jsonIsObject(input);
          Validation.events(userInput);
-         routerWs(userInput, userClass, userId, ws)
+         routerWs(userInput, userId, ws);
 
       } catch (e) {
-         ErrorHandler.ws(e, ws)
+         ErrorHandler.ws(e, ws);
       }
    });
 

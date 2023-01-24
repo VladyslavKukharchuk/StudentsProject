@@ -1,22 +1,5 @@
 import TokenService from '../services/TokenServiсe';
 import { Response, NextFunction } from 'express';
-import { UnauthorizedError } from '../exceptions/ApiError';
-
-function checkAccessToken(authorizationHeader: any) {
-   if (!authorizationHeader) {
-      throw new UnauthorizedError;
-   }
-
-   const token = authorizationHeader.split(' ')[1];
-   if (!token) {
-      throw new UnauthorizedError;
-   }
-
-   const userData = TokenService.validateAccessToken(token);
-   if (!userData) {
-      throw new UnauthorizedError;
-   }
-}
 
 class Authentication {
    static http(req: any, res: Response, next: NextFunction) {
@@ -26,7 +9,7 @@ class Authentication {
 
       try {
          const authorizationHeader = req.headers.authorization;
-         checkAccessToken(authorizationHeader);
+         TokenService.checkAccessToken(authorizationHeader);
 
          next();
       } catch (e) {
@@ -36,7 +19,7 @@ class Authentication {
 
    static ws(accessToken: any) {
       try {
-         checkAccessToken(accessToken);
+         TokenService.checkAccessToken(accessToken);
       } catch (e) {
          throw e;
       }
