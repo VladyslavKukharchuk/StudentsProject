@@ -1,5 +1,5 @@
 import EventService from '../services/EventService';
-import { broadcast, CLIENTS } from '../webSockets';
+import { broadcast , CLIENTS } from '../webSockets';
 import url from 'url';
 
 class EventsController {
