@@ -1,13 +1,10 @@
-import ClassService from "../services/ClassService";
+import { getClasses } from "../services/ClassService";
 import { Request, Response, NextFunction } from "express";
 
-class ClassController {
    // возвращаем список доступных классов
-   static async getAll(req: Request, res: Response, next: NextFunction) {
-      await ClassService.getAll()
+   export async function getAllClasses(req: Request, res: Response, next: NextFunction) {
+      await getClasses()
          .then((classes) => res.status(200).json(classes))
          .catch((err) => next(err));
    }
-}
 
-export default ClassController;

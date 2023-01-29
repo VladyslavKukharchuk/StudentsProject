@@ -1,16 +1,13 @@
 import express from 'express';
 import 'dotenv/config';
-import mongoose from 'mongoose';
 import { createServer } from 'http';
 import router from './routers/router';
-import ErrorHandler from './middleware/errorHandler';
-import User from './models/User';
+import { errorHandlerHttp } from './middleware/errorHandler';
 import db from './db';
 import { WebSocket } from 'ws';
 import connection from './webSockets';
-
-const DB_URL = process.env.DB_URL!;
-mongoose.set('strictQuery', false);
+import { connectToDatabase } from './mongo';
+import { deleteOllUsers } from './repositories/MongoRepository';
 
 const app = express();
 const httpServer = createServer(app);
@@ -19,7 +16,7 @@ const PORT = process.env.PORT;
 
 app.use(express.json());
 app.use('/api', router);
-app.use(ErrorHandler.http);
+app.use(errorHandlerHttp);
 
 // подключение
 wss.on('connection', connection);
@@ -30,13 +27,13 @@ wss.on('error', (err: Error) => {
 });
 
 wss.on('close', async () => {
-   await User.deleteMany({});
+   await deleteOllUsers();
    console.error('WS server close!');
 });
 
 async function start() {
    await db.connect();
-   await mongoose.connect(DB_URL);
+   await connectToDatabase();
    httpServer.listen(PORT, () => {
       console.log(`Server started on port ${PORT}.`);
    });
@@ -56,12 +53,9 @@ process.on('uncaughtException', (err) => {
       },
    });
 
-   httpServer.close(() => {
+   httpServer.close(async () => {
       console.log('Http server closed.');
-      mongoose.connection.close(false, async () => {
-         await User.deleteMany({});
-         console.log('MongoDb connection closed.');
-      });
+      await deleteOllUsers();
       db.end(() => {
          console.log('PG connections closed.');
          process.exit(1);
@@ -83,12 +77,9 @@ process.on('unhandledRejection', (reason, promise) => {
       },
    });
 
-   httpServer.close(() => {
+   httpServer.close(async () => {
       console.log('Http server closed.');
-      mongoose.connection.close(false, async () => {
-         await User.deleteMany({});
-         console.log('MongoDb connection closed.');
-      });
+      await deleteOllUsers();
       db.end(() => {
          console.log('PG connections closed.');
          process.exit(1);
@@ -103,12 +94,9 @@ process.on('unhandledRejection', (reason, promise) => {
 //SIGINT
 process.on('SIGINT', () => {
    console.info('SIGTERM signal received.');
-   httpServer.close(() => {
+   httpServer.close(async () => {
       console.log('Http server closed.');
-      mongoose.connection.close(false, async () => {
-         await User.deleteMany({});
-         console.log('MongoDb connection closed.');
-      });
+      await deleteOllUsers();
       db.end(() => {
          console.log('PG connections closed.');
          process.exit(0);
@@ -119,12 +107,9 @@ process.on('SIGINT', () => {
 //SIGTERM
 process.on('SIGTERM', () => {
    console.info('SIGTERM signal received.');
-   httpServer.close(() => {
+   httpServer.close(async () => {
       console.log('Http server closed.');
-      mongoose.connection.close(false, async () => {
-         await User.deleteMany({});
-         console.log('MongoDb connection closed.');
-      });
+      await deleteOllUsers();
       db.end(() => {
          console.log('PG connections closed.');
          process.exit(0);

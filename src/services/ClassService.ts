@@ -1,11 +1,7 @@
-import ClassesRepository from '../repositories/ClassesRepository';
+import { getClassesPg }from '../repositories/ClassesRepository';
 
-class ClassService {
-   // // возвращаем список доступных классов
-   static async getAll() {
-      const classes = await ClassesRepository.getClasses();
-      return classes;
-   }
+// // возвращаем список доступных классов
+export async function getClasses() {
+   const classes = await getClassesPg();
+   return classes;
 }
-
-export default ClassService;

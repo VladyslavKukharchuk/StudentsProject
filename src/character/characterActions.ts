@@ -4,7 +4,7 @@ import { BadRequest } from '../exceptions/ApiError';
 
 class CharacterActions {
    static useAttack(userClass: Character, target: any, hero: any) {
-      if (target.id === hero.id) {
+      if (target._id === hero._id) {
          throw new BadRequest('The attack can only be used on enemies!');
       }
       console.log(target)
@@ -49,13 +49,13 @@ class CharacterActions {
 
       switch (userClass.name) {
          case 'Thief':
-            if (target.id !== hero.id) {
+            if (target._id !== hero._id) {
                throw new BadRequest('The ability can only be used on yourself!');
             }
 
             return userClass.ability();
          case 'Mage':
-            if (target.id === hero.id) {
+            if (target._id === hero._id) {
                throw new BadRequest('The ability can only be used on enemies!');
             }
 
@@ -69,7 +69,7 @@ class CharacterActions {
 
             return userClass.ability();
          case 'Warrior':
-            if (target.id !== hero.id) {
+            if (target._id !== hero._id) {
                throw new BadRequest('The ability can only be used on yourself!');
             }
 

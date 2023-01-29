@@ -1,9 +1,9 @@
-import ErrorHandler from './middleware/ErrorHandler';
-import Validation from './middleware/Validation';
-import User from './models/User';
-import routerWs from './routers/routesWS';
-import eventsController from './controllers/EventsController';
 import url from 'url';
+import routerWs from './routers/routesWS';
+import { errorHandlerWs } from './middleware/ErrorHandler';
+import { validationEvents } from './middleware/Validation';
+import { setConnection } from './controllers/EventsController';
+import { deletedUserById } from './repositories/MongoRepository';
 
 type Client = {
    id: number,
@@ -11,14 +11,6 @@ type Client = {
 }
 
 export const CLIENTS: Client[] = [];
-
-export function unicast(userId: number, data: any): void {
-   CLIENTS.forEach((client: any) => {
-      if (client.userId === userId) {
-         client.ws.send(JSON.stringify(data));
-      }
-   });
-}
 
 export function broadcast(data: any): void {
    CLIENTS.forEach((client: any) => {
@@ -42,10 +34,11 @@ export default function connection(ws: any, req: any) {
    const { id } = url.parse(req.url, true).query;
    const userId = Number(id);
 
-   eventsController.connection(ws, req).catch((err) => {
-      ErrorHandler.ws(err, ws);
-      ws.close();
-   });
+   setConnection(ws, req)
+      .catch((err) => {
+         errorHandlerWs(err, ws);
+         ws.close();
+      });
 
 
    ws.on('message', (input: any) => {
@@ -53,11 +46,11 @@ export default function connection(ws: any, req: any) {
 
       try {
          userInput = jsonIsObject(input);
-         Validation.events(userInput);
+         validationEvents(userInput);
          routerWs(userInput, userId, ws);
 
       } catch (e) {
-         ErrorHandler.ws(e, ws);
+         errorHandlerWs(e, ws);
       }
    });
 
@@ -65,7 +58,7 @@ export default function connection(ws: any, req: any) {
    // отключение
    ws.on('close', async () => {
       // удаляем сессию из mongodb
-      await User.deleteOne({ _id: userId });
+      await deletedUserById(userId);
       // убираем юзера из подписчиков ws сервера
       let clientIndex = CLIENTS.findIndex(client => client.id === userId);
       CLIENTS.splice(clientIndex, 1);
