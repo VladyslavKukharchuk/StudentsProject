@@ -18,7 +18,7 @@ export function authenticationHttp(req: any, res: Response, next: NextFunction) 
 
 export function authenticationWs(accessToken: any) {
    try {
-      checkAccessToken(accessToken);
+      return checkAccessToken(accessToken);
    } catch (e) {
       throw e;
    }

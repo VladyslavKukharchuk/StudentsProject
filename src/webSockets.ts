@@ -3,7 +3,7 @@ import routerWs from './routers/routesWS';
 import { errorHandlerWs } from './middleware/ErrorHandler';
 import { validationEvents } from './middleware/Validation';
 import { setConnection } from './controllers/EventsController';
-import { deletedUserById } from './repositories/MongoRepository';
+import { deletedUserByIdMg } from './repositories/MongoRepository';
 
 type Client = {
    id: number,
@@ -13,7 +13,7 @@ type Client = {
 export const CLIENTS: Client[] = [];
 
 export function broadcast(data: any): void {
-   CLIENTS.forEach((client: any) => {
+   CLIENTS.forEach((client: Client) => {
       client.ws.send(JSON.stringify(data));
    });
 }
@@ -42,13 +42,10 @@ export default function connection(ws: any, req: any) {
 
 
    ws.on('message', (input: any) => {
-      let userInput: any = {};
-
       try {
-         userInput = jsonIsObject(input);
+         const userInput = jsonIsObject(input);
          validationEvents(userInput);
          routerWs(userInput, userId, ws);
-
       } catch (e) {
          errorHandlerWs(e, ws);
       }
@@ -58,9 +55,9 @@ export default function connection(ws: any, req: any) {
    // отключение
    ws.on('close', async () => {
       // удаляем сессию из mongodb
-      await deletedUserById(userId);
+      await deletedUserByIdMg(userId);
       // убираем юзера из подписчиков ws сервера
-      let clientIndex = CLIENTS.findIndex(client => client.id === userId);
+      const clientIndex = CLIENTS.findIndex(client => client.id === userId);
       CLIENTS.splice(clientIndex, 1);
    });
 }

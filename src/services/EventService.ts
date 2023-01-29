@@ -2,20 +2,24 @@ import { authenticationWs } from '../middleware/Authentication';
 import { getUserClassByIdPg } from '../repositories/UsersRepository';
 import CharacterCreator from '../character/characterCreator';
 import CharacterActions from '../character/characterActions';
-import { BadRequest } from '../exceptions/ApiError';
+import { BadRequest, UnauthorizedError } from '../exceptions/ApiError';
 
 import {
-   insertUser,
-   findUserById,
-   findOllUsers,
-   updateUserHp,
-   updateUserStatuses,
-   deletedUserById,
+   createUserMg,
+   getUserByIdMg,
+   getAllUsersMg,
+   updateUserHpMg,
+   updateUserStatusesMg,
+   deletedUserByIdMg,
 } from '../repositories/MongoRepository';
 
 export async function connection(accessToken: string, id: number) {
    // проверяем jwt токен.
-   authenticationWs(accessToken);
+   const userData = authenticationWs(accessToken);
+   // @ts-ignore
+   if(userData.id !== id){
+      throw new UnauthorizedError;
+   }
 
    //  получаем класс текущего юзера из postgres
    const classData = await getUserClassByIdPg(id);
@@ -24,21 +28,21 @@ export async function connection(accessToken: string, id: number) {
    }
 
    // создаем сессию в mongodb
-   await insertUser({ _id: id, username: classData.username, hp: classData.health, statuses: [] });
+   await createUserMg({ _id: id, username: classData.username, hp: classData.health, statuses: [] });
 
-   const ollUsers = await findOllUsers();
+   const ollUsers = await getAllUsersMg();
 
-   return { ollUsers };
+   return ollUsers;
 }
 
 // Действия
 // атака
 export async function attack(targetUserId: number, currentUserId: number) {
    //  получаем сессию текущего юзера из mongo
-   const currentUser = await findUserById(currentUserId);
+   const currentUser = await getUserByIdMg(currentUserId);
 
    //  получаем сессию целевого юзера из mongo
-   const targetUser = await findUserById(targetUserId);
+   const targetUser = await getUserByIdMg(targetUserId);
 
    if (!targetUser) {
       throw new BadRequest('Failed to Attack, maybe your target has already left the fight');
@@ -53,7 +57,7 @@ export async function attack(targetUserId: number, currentUserId: number) {
    //  Если нет возвращаем ошибку автору
    //  Уменьшаем здоровье целевого юзера и сохраняем изменения в сессии.
    // @ts-ignore
-   const user = await updateUserHp(targetUserId, targetUserHp);
+   const user = await updateUserHpMg(targetUserId, targetUserHp);
 
    return user;
 }
@@ -62,12 +66,10 @@ export async function attack(targetUserId: number, currentUserId: number) {
 export async function ability(targetUserId: number, currentUserId: number) {
 
    //  получаем сессию текущего юзера из mongo
-   const currentUser = await findUserById(currentUserId);
-   console.log(currentUser);
+   const currentUser = await getUserByIdMg(currentUserId);
 
    //  получаем сессию целевого юзера из mongo
-   const targetUser = await findUserById(targetUserId);
-   console.log(targetUser);
+   const targetUser = await getUserByIdMg(targetUserId);
 
    if (!targetUser) {
       throw new BadRequest('Ability failed, your target may have already left the battle');
@@ -81,13 +83,12 @@ export async function ability(targetUserId: number, currentUserId: number) {
 
    //  Добавляем статус целевому юзеру и сохраняем изменения в сессии.
 
-   async function removeEffectOfAbility(userID: any, targetStatus: number) {
-      const user = await findUserById(userID);
+   async function removeEffectOfAbility(userID: number, targetStatus: number) {
+      const user = await getUserByIdMg(userID);
       if (user) {
-         let statusIndex = user.statuses.findIndex((status: number) => status === targetStatus);
+         const statusIndex = user.statuses.findIndex((status: number) => status === targetStatus);
          user.statuses.splice(statusIndex, 1);
-         const updatedUser = await updateUserStatuses(userID, user.statuses);
-         console.log(updatedUser);
+         await updateUserStatusesMg(userID, user.statuses);
       }
    }
 
@@ -95,8 +96,7 @@ export async function ability(targetUserId: number, currentUserId: number) {
 
    targetUser.statuses.push(targetUserStatus);
 
-   const updatedUser = await updateUserStatuses(targetUserId, targetUser.statuses);
-   console.log(updatedUser);
+   const updatedUser = await updateUserStatusesMg(targetUserId, targetUser.statuses);
 
    return updatedUser;
 }
@@ -106,8 +106,7 @@ export async function message(message: string, currentUserId: number) {
    //  Проверяем может ли юзер писать сообщения
 
    //  получаем сессию текущего юзера из mongo
-   const currentUser = await findUserById(currentUserId);
-   console.log(currentUser);
+   const currentUser = await getUserByIdMg(currentUserId);
 
    // @ts-ignore
    if (currentUser.hp === 0) {
@@ -121,7 +120,7 @@ export async function message(message: string, currentUserId: number) {
 // возрождение
 export async function restore(currentUserId: number) {
    //  Проверяем нужно ли юзеру возрождение
-   const currentUser = await findUserById(currentUserId);
+   const currentUser = await getUserByIdMg(currentUserId);
 
    // @ts-ignore
    if (currentUser.hp !== 0) {
@@ -132,11 +131,10 @@ export async function restore(currentUserId: number) {
    //  получаем класс текущего юзера из postgres
    const classData = await getUserClassByIdPg(currentUserId);
 
-   await deletedUserById(currentUserId);
+   await deletedUserByIdMg(currentUserId);
 
-   await insertUser({ _id: currentUserId, username: classData.username, hp: classData.health, statuses: [] });
+   await createUserMg({ _id: currentUserId, username: classData.username, hp: classData.health, statuses: [] });
 
-   const user = await findUserById(currentUserId);
-   console.log(user);
+   const user = await getUserByIdMg(currentUserId);
    return user;
 }

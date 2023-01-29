@@ -7,7 +7,7 @@ import db from './db';
 import { WebSocket } from 'ws';
 import connection from './webSockets';
 import { connectToDatabase } from './mongo';
-import { deleteOllUsers } from './repositories/MongoRepository';
+import { deleteAllUsersMg } from './repositories/MongoRepository';
 
 const app = express();
 const httpServer = createServer(app);
@@ -27,7 +27,7 @@ wss.on('error', (err: Error) => {
 });
 
 wss.on('close', async () => {
-   await deleteOllUsers();
+   await deleteAllUsersMg();
    console.error('WS server close!');
 });
 
@@ -55,7 +55,7 @@ process.on('uncaughtException', (err) => {
 
    httpServer.close(async () => {
       console.log('Http server closed.');
-      await deleteOllUsers();
+      await deleteAllUsersMg();
       db.end(() => {
          console.log('PG connections closed.');
          process.exit(1);
@@ -79,7 +79,7 @@ process.on('unhandledRejection', (reason, promise) => {
 
    httpServer.close(async () => {
       console.log('Http server closed.');
-      await deleteOllUsers();
+      await deleteAllUsersMg();
       db.end(() => {
          console.log('PG connections closed.');
          process.exit(1);
@@ -96,7 +96,7 @@ process.on('SIGINT', () => {
    console.info('SIGTERM signal received.');
    httpServer.close(async () => {
       console.log('Http server closed.');
-      await deleteOllUsers();
+      await deleteAllUsersMg();
       db.end(() => {
          console.log('PG connections closed.');
          process.exit(0);
@@ -109,7 +109,7 @@ process.on('SIGTERM', () => {
    console.info('SIGTERM signal received.');
    httpServer.close(async () => {
       console.log('Http server closed.');
-      await deleteOllUsers();
+      await deleteAllUsersMg();
       db.end(() => {
          console.log('PG connections closed.');
          process.exit(0);

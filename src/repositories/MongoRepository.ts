@@ -2,26 +2,25 @@ import User from '../models/User';
 import { collections } from '../mongo';
 
 //створити користувача
-export async function insertUser(userData: User) {
+export async function createUserMg(userData: User) {
    await collections.users?.insertOne(userData);
 }
 
 
 //знай ти всіх користувачів
-export async function findOllUsers()
-{
+export async function getAllUsersMg() {
    return await collections.users?.find({}).toArray();
 }
 
 
 //знайти по id
-export async function findUserById(id: number) {
+export async function getUserByIdMg(id: number) {
    return await collections.users?.findOne({ _id: id });
 }
 
 
 //обновити значення hp
-export async function updateUserHp(id: number, hp: number) {
+export async function updateUserHpMg(id: number, hp: number) {
    const updatedUser = await collections.users?.findOneAndUpdate({ _id: id }, { $set: { hp: hp } }, { returnDocument: 'after' });
    // @ts-ignore
    return updatedUser.value;
@@ -29,7 +28,7 @@ export async function updateUserHp(id: number, hp: number) {
 
 
 //обновлення знавчення statuses
-export async function updateUserStatuses(id: number, statuses: number[]) {
+export async function updateUserStatusesMg(id: number, statuses: number[]) {
    const updatedUser = await collections.users?.findOneAndUpdate({ _id: id }, { $set: { statuses: statuses } }, { returnDocument: 'after' });
    // @ts-ignore
    return updatedUser.value;
@@ -37,13 +36,13 @@ export async function updateUserStatuses(id: number, statuses: number[]) {
 
 
 //видалити користувача
-export async function deletedUserById(id: number) {
+export async function deletedUserByIdMg(id: number) {
    await collections.users?.deleteOne({ _id: id });
 }
 
 
 //видалити всіх користувачів
-export async function deleteOllUsers() {
+export async function deleteAllUsersMg() {
    await collections.users?.deleteMany({});
 }
 

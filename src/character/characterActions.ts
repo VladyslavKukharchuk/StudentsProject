@@ -7,7 +7,6 @@ class CharacterActions {
       if (target._id === hero._id) {
          throw new BadRequest('The attack can only be used on enemies!');
       }
-      console.log(target)
 
       if (hero.hp === 0) {
          throw new BadRequest('You are dead, if you want to continue the fight, first relive!');
@@ -53,18 +52,26 @@ class CharacterActions {
                throw new BadRequest('The ability can only be used on yourself!');
             }
 
+            if (target.statuses.includes(UserStatusesEnum.Escape)) {
+               throw new BadRequest('Your ability is still active, you can use it again after the effect ends');
+            }
+
             return userClass.ability();
          case 'Mage':
             if (target._id === hero._id) {
                throw new BadRequest('The ability can only be used on enemies!');
             }
 
+            if (target.hp === 0) {
+               throw new BadRequest('Your opponent is already dead, you can use the ability on another!');
+            }
+
             if (target.statuses.includes(UserStatusesEnum.Escape)) {
                throw new BadRequest('The enemy in hiding, now impossible to attack him');
             }
 
-            if (target.hp === 0) {
-               throw new BadRequest('Your opponent is already dead, you can use the ability on another!');
+            if (target.statuses.includes(UserStatusesEnum.Enchant)) {
+               throw new BadRequest('Your opponent has already been enchanted, you can use the ability on another!');
             }
 
             return userClass.ability();
@@ -73,16 +80,12 @@ class CharacterActions {
                throw new BadRequest('The ability can only be used on yourself!');
             }
 
+            if (target.statuses.includes(UserStatusesEnum.Defense)) {
+               throw new BadRequest('Your ability is still active, you can use it again after the effect ends');
+            }
+
             return userClass.ability();
       }
-   }
-
-   static useRelive(userClass: any, hero: any) {
-      if (hero.hp !== 0) {
-         throw new BadRequest('Your character is still alive, you can continue the battle!');
-      }
-
-      return userClass.relive();
    }
 }
 

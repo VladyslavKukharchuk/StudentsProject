@@ -22,10 +22,6 @@ abstract class Character {
    }
 
    abstract ability(): number;
-
-   relive(): number {
-      return this.hp;
-   }
 }
 
 export default Character;
