@@ -3,7 +3,9 @@ import routerWs from './routers/routesWS';
 import { errorHandlerWs } from './middleware/ErrorHandler';
 import { validationEvents } from './middleware/Validation';
 import { setConnection } from './controllers/EventsController';
-import { deletedUserByIdMg } from './repositories/MongoRepository';
+
+import MongoRepository from './repositories/MongoRepository';
+const mongoRepository = new MongoRepository();
 
 type Client = {
    id: number,
@@ -55,7 +57,7 @@ export default function connection(ws: any, req: any) {
    // отключение
    ws.on('close', async () => {
       // удаляем сессию из mongodb
-      await deletedUserByIdMg(userId);
+      await mongoRepository.deletedUserById(userId);
       // убираем юзера из подписчиков ws сервера
       const clientIndex = CLIENTS.findIndex(client => client.id === userId);
       CLIENTS.splice(clientIndex, 1);

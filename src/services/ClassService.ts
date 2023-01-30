@@ -1,7 +1,11 @@
-import { getClassesPg }from '../repositories/ClassesRepository';
+import IClassesRepository from '../interfaces/IClassesRepository';
 
 // // возвращаем список доступных классов
-export async function getClasses() {
-   const classes = await getClassesPg();
-   return classes;
+export default class ClassService {
+   constructor(private repository: IClassesRepository) {}
+
+   async getClasses() {
+      const classes = await this.repository.getClasses();
+      return classes;
+   }
 }
