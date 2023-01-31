@@ -16,7 +16,7 @@ export function authenticationHttp(req: Request, res: Response, next: NextFuncti
    }
 }
 
-export function authenticationWs(accessToken: string | undefined) {
+export function authenticationWs(accessToken: string ) {
    try {
       return checkAccessToken(accessToken);
    } catch (e) {

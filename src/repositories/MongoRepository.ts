@@ -3,7 +3,7 @@ import { collections } from '../mongo';
 import IMongoRepository from '../interfaces/IMongoRepository';
 import { ModifyResult } from 'mongodb';
 
-export default class MongoRepository implements IMongoRepository{
+export default class MongoRepository implements IMongoRepository {
    //створити користувача
    async createUser(userData: IUser) {
       await collections.users?.insertOne(userData);
@@ -17,20 +17,20 @@ export default class MongoRepository implements IMongoRepository{
 
    //знайти по id
    async getUserById(id: number) {
-         const user = (await collections.users?.findOne({ _id: id })) as IUser;
-         return user;
+      const user = (await collections.users?.findOne({ _id: id })) as IUser;
+      return user;
    }
 
    //обновити значення hp
    async updateUserHp(id: number, hp: number) {
-      const updatedUser = await collections.users?.findOneAndUpdate({ _id: id }, { $set: { hp: hp } }, { returnDocument: 'after' }) as  ModifyResult<IUser>;
-      return updatedUser.value;
+      const updatedUser = await collections.users?.findOneAndUpdate({ _id: id }, { $set: { hp: hp } }, { returnDocument: 'after' }) as ModifyResult<IUser>;
+      return updatedUser.value as IUser;
    }
 
    //обновлення знавчення statuses
    async updateUserStatuses(id: number, statuses: number[]) {
-      const updatedUser = await collections.users?.findOneAndUpdate({ _id: id }, { $set: { statuses: statuses } }, { returnDocument: 'after' }) as  ModifyResult<IUser>;
-      return updatedUser.value;
+      const updatedUser = await collections.users?.findOneAndUpdate({ _id: id }, { $set: { statuses: statuses } }, { returnDocument: 'after' }) as ModifyResult<IUser>;
+      return updatedUser.value as IUser;
    }
 
    //видалити користувача
