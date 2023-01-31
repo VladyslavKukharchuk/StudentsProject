@@ -3,14 +3,11 @@ import routerWs from './routers/routesWS';
 import { errorHandlerWs } from './middleware/ErrorHandler';
 import { validationEvents } from './middleware/Validation';
 import { setConnection } from './controllers/EventsController';
+import Client from './interfaces/Client';
 
 import MongoRepository from './repositories/MongoRepository';
+import { WebSocket } from 'ws';
 const mongoRepository = new MongoRepository();
-
-type Client = {
-   id: number,
-   ws: any
-}
 
 export const CLIENTS: Client[] = [];
 
@@ -32,7 +29,7 @@ function jsonIsObject(json: any) {
    }
 }
 
-export default function connection(ws: any, req: any) {
+export default function connection(ws: WebSocket, req: any) {
    const { id } = url.parse(req.url, true).query;
    const userId = Number(id);
 

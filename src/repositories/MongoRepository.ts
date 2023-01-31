@@ -1,4 +1,4 @@
-import User from '../models/User';
+import User from '../interfaces/User';
 import { collections } from '../mongo';
 import IMongoRepository from '../interfaces/IMongoRepository';
 
@@ -8,21 +8,17 @@ export default class MongoRepository implements IMongoRepository{
       await collections.users?.insertOne(userData);
    }
 
-
-   //знай ти всіх користувачів
+   //знайти всіх користувачів
    async getAllUsers() {
-      return await collections.users?.find({}).toArray();
+      const users = (await collections.users?.find({}).toArray()) as User[];
+      return users;
    }
-
 
    //знайти по id
    async getUserById(id: number) {
-         const user = await collections.users?.findOne({ _id: id });
-         if (user){
-            return user;
-         }
+         const user = (await collections.users?.findOne({ _id: id })) as User;
+         return user;
    }
-
 
    //обновити значення hp
    async updateUserHp(id: number, hp: number) {
@@ -31,7 +27,6 @@ export default class MongoRepository implements IMongoRepository{
       return updatedUser.value;
    }
 
-
    //обновлення знавчення statuses
    async updateUserStatuses(id: number, statuses: number[]) {
       const updatedUser = await collections.users?.findOneAndUpdate({ _id: id }, { $set: { statuses: statuses } }, { returnDocument: 'after' });
@@ -39,12 +34,10 @@ export default class MongoRepository implements IMongoRepository{
       return updatedUser.value;
    }
 
-
    //видалити користувача
    async deletedUserById(id: number) {
       await collections.users?.deleteOne({ _id: id });
    }
-
 
    //видалити всіх користувачів
    async deleteAllUsers() {

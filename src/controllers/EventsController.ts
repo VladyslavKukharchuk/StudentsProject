@@ -1,15 +1,16 @@
 import EventService from '../services/EventService';
 import { broadcast, CLIENTS } from '../webSockets';
 import url from 'url';
-
+import { WebSocket } from 'ws';
 import MongoRepository from '../repositories/MongoRepository';
+
 const eventService = new EventService(new MongoRepository);
 
 // подключение
 // подписываем текущего юзера на вебсокет
 // отправляем сессии всех активных пользователей
 // отправляем кеш последних 10 сообщений из Redis
-export async function setConnection(ws: any, req: any) {
+export async function setConnection(ws: WebSocket, req: any) {
    const parsedUrl = url.parse(req.url, true).query;
    const id = Number(parsedUrl.id);
    const accessToken = req.headers.authorization;

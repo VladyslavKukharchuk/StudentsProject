@@ -1,7 +1,7 @@
 import { checkAccessToken } from '../services/TokenServiсe';
-import { Response, NextFunction } from 'express';
+import { Response, NextFunction, Request } from 'express';
 
-export function authenticationHttp(req: any, res: Response, next: NextFunction) {
+export function authenticationHttp(req: Request, res: Response, next: NextFunction) {
    if (req.method === 'OPTIONS') {
       next();
    }
@@ -16,7 +16,7 @@ export function authenticationHttp(req: any, res: Response, next: NextFunction) 
    }
 }
 
-export function authenticationWs(accessToken: any) {
+export function authenticationWs(accessToken: string | undefined) {
    try {
       return checkAccessToken(accessToken);
    } catch (e) {

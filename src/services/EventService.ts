@@ -78,12 +78,20 @@ export default class EventService {
 
       const targetUserStatus = CharacterActions.useAbility(userClass, targetUser, currentUser);
 
-      //  Добавляем статус целевому юзеру и сохраняем изменения в сессии.
 
-      setTimeout(this.removeEffectOfAbility.bind(this), 30 * 1000, targetUserId, targetUserStatus);
+      const removeEffectOfAbility = async(userID: number, targetStatus: number) => {
+         const user = await this.repository.getUserById(userID);
+         if (user) {
+            const statusIndex = user.statuses.findIndex((status: number) => status === targetStatus);
+            user.statuses.splice(statusIndex, 1);
+            await this.repository.updateUserStatuses(userID, user.statuses);
+         }
+      }
+
+      setTimeout(removeEffectOfAbility, 30 * 1000, targetUserId, targetUserStatus);
 
       targetUser.statuses.push(targetUserStatus);
-
+      //  Добавляем статус целевому юзеру и сохраняем изменения в сессии.
       const updatedUser = await this.repository.updateUserStatuses(targetUserId, targetUser.statuses);
 
       return updatedUser;
@@ -96,7 +104,6 @@ export default class EventService {
       //  получаем сессию текущего юзера из mongo
       const currentUser = await this.repository.getUserById(currentUserId);
 
-      // @ts-ignore
       if (currentUser.hp === 0) {
          //  Если нет возвращаем ошибку автору
          throw new BadRequest('You are dead, if you want to write message, first relive!');
@@ -110,7 +117,6 @@ export default class EventService {
       //  Проверяем нужно ли юзеру возрождение
       const currentUser = await this.repository.getUserById(currentUserId);
 
-      // @ts-ignore
       if (currentUser.hp !== 0) {
          //  Если нет возвращаем ошибку автору
          throw new BadRequest('Your character is still alive, you can continue the battle!');
@@ -125,14 +131,5 @@ export default class EventService {
 
       const user = await this.repository.getUserById(currentUserId);
       return user;
-   }
-
-   async removeEffectOfAbility(userID: number, targetStatus: number) {
-      const user = await this.repository.getUserById(userID);
-      if (user) {
-         const statusIndex = user.statuses.findIndex((status: number) => status === targetStatus);
-         user.statuses.splice(statusIndex, 1);
-         await this.repository.updateUserStatuses(userID, user.statuses);
-      }
    }
 }

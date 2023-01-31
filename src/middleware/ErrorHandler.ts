@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { BadRequest, UnauthorizedError } from '../exceptions/ApiError';
+import { WebSocket } from 'ws';
 
 
 export function errorHandlerHttp(err: Error, req: Request, res: Response, next: NextFunction) {
@@ -29,7 +30,7 @@ export function errorHandlerHttp(err: Error, req: Request, res: Response, next: 
    res.status(500).send({ message: 'Something went wrong on the server' });
 }
 
-export function errorHandlerWs(err: any, ws: any) {
+export function errorHandlerWs(err: any, ws: WebSocket) {
    if (err instanceof BadRequest) {
       ws.send(JSON.stringify({ message: err.message }));
       return;

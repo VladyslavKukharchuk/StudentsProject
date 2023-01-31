@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
 import { UnauthorizedError } from '../exceptions/ApiError';
+import UserDto from '../dtos/UserDto';
 
-export function generateTokens(payload: any) {
+export function generateTokens(payload: UserDto) {
    const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET_KEY!, { expiresIn: '1h' });
    return {
       accessToken,
@@ -17,7 +18,7 @@ export function validateAccessToken(token: string) {
    }
 }
 
-export function checkAccessToken(authorizationHeader: any) {
+export function checkAccessToken(authorizationHeader: string | undefined) {
    if (!authorizationHeader) {
       throw new UnauthorizedError;
    }

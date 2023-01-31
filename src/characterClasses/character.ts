@@ -1,3 +1,5 @@
+import User from '../interfaces/User';
+
 abstract class Character {
    readonly name: string;
    readonly hp: number;
@@ -13,7 +15,7 @@ abstract class Character {
       this.abilityName = abilityName;
    }
 
-   attack(target: any): number {
+   attack(target: User): number {
       if (target.hp - this.damage <= 0) {
          return 0;
       }
