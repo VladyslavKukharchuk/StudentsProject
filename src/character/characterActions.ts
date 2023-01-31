@@ -1,10 +1,10 @@
 import { UserStatusesEnum } from '../config/enums';
 import Character from '../characterClasses/character';
 import { BadRequest } from '../exceptions/ApiError';
-import User from '../interfaces/User';
+import IUser from '../interfaces/IUser';
 
 class CharacterActions {
-   static useAttack(userClass: Character, target: User, hero: User) {
+   static useAttack(userClass: Character, target: IUser, hero: IUser) {
       if (target._id === hero._id) {
          throw new BadRequest('The attack can only be used on enemies!');
       }
@@ -38,7 +38,7 @@ class CharacterActions {
       }
    }
 
-   static useAbility(userClass: any, target: User, hero: User) {
+   static useAbility(userClass: Character, target: IUser, hero: IUser) {
       if (hero.hp === 0) {
          throw new BadRequest('You are dead, if you want to continue the fight, first relive!');
       }

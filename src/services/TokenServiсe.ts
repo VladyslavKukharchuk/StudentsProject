@@ -28,7 +28,7 @@ export function checkAccessToken(authorizationHeader: string | undefined) {
       throw new UnauthorizedError;
    }
 
-   const userData = validateAccessToken(token);
+   const userData = validateAccessToken(token) as UserDto;
    if (!userData) {
       throw new UnauthorizedError;
    }

@@ -1,8 +1,8 @@
 import * as mongoDB from 'mongodb';
 import * as dotenv from 'dotenv';
-import User from './interfaces/User';
+import IUser from './interfaces/IUser';
 
-export const collections: { users?: mongoDB.Collection<User> } = {};
+export const collections: { users?: mongoDB.Collection<IUser> } = {};
 
 export async function connectToDatabase() {
    dotenv.config();
@@ -15,7 +15,7 @@ export async function connectToDatabase() {
 
    await applySchemaValidation(db);
 
-   const usersCollection = db.collection<User>(process.env.MONGODB_USERS_COLLECTION_NAME!);
+   const usersCollection = db.collection<IUser>(process.env.MONGODB_USERS_COLLECTION_NAME!);
 
    collections.users = usersCollection;
 }

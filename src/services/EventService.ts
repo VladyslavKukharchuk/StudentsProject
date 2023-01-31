@@ -13,7 +13,7 @@ export default class EventService {
    async connection(accessToken: string, id: number) {
       // проверяем jwt токен.
       const userData = authenticationWs(accessToken);
-      // @ts-ignore
+
       if (userData.id !== id) {
          throw new UnauthorizedError;
       }
@@ -50,7 +50,7 @@ export default class EventService {
       const userClass = CharacterCreator.createCharacter(classData.class_id, classData);
 
       //  проверяем действующие статусы на целевом юзере и возможно ли провести атаку.
-      const targetUserHp = CharacterActions.useAttack(userClass, targetUser, currentUser);
+      const targetUserHp = CharacterActions.useAttack(userClass, targetUser, currentUser) as number;
       //  Если нет возвращаем ошибку автору
       //  Уменьшаем здоровье целевого юзера и сохраняем изменения в сессии.
 
@@ -76,7 +76,7 @@ export default class EventService {
       const classData = await usersRepository.getUserClassById(currentUserId);
       const userClass = CharacterCreator.createCharacter(classData.class_id, classData);
 
-      const targetUserStatus = CharacterActions.useAbility(userClass, targetUser, currentUser);
+      const targetUserStatus = CharacterActions.useAbility(userClass, targetUser, currentUser) as number;
 
 
       const removeEffectOfAbility = async(userID: number, targetStatus: number) => {

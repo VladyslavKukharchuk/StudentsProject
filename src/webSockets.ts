@@ -3,21 +3,21 @@ import routerWs from './routers/routesWS';
 import { errorHandlerWs } from './middleware/ErrorHandler';
 import { validationEvents } from './middleware/Validation';
 import { setConnection } from './controllers/EventsController';
-import Client from './interfaces/Client';
+import IClient from './interfaces/IClient';
 
 import MongoRepository from './repositories/MongoRepository';
 import { WebSocket } from 'ws';
 const mongoRepository = new MongoRepository();
 
-export const CLIENTS: Client[] = [];
+export const CLIENTS: IClient[] = [];
 
 export function broadcast(data: any): void {
-   CLIENTS.forEach((client: Client) => {
+   CLIENTS.forEach((client: IClient) => {
       client.ws.send(JSON.stringify(data));
    });
 }
 
-function jsonIsObject(json: any) {
+function jsonIsObject(json: string) {
    try {
       const data = JSON.parse(json);
       if (typeof data !== 'object') {
@@ -40,7 +40,7 @@ export default function connection(ws: WebSocket, req: any) {
       });
 
 
-   ws.on('message', (input: any) => {
+   ws.on('message', (input: string) => {
       try {
          const userInput = jsonIsObject(input);
          validationEvents(userInput);

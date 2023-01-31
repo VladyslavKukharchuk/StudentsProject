@@ -6,7 +6,7 @@
 //    "statuses": number[];
 // }
 
-export default interface User {
+export default interface IUser {
    _id: number,
    username: string,
    hp: number,
