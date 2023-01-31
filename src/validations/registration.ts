@@ -29,7 +29,6 @@ export default function registrationValidation(data: object) {
 
    const { error } = registration.validate(data, { abortEarly: true });
    if (error) {
-      console.log(error.details);
       throw new BadRequest(error.details[0].message);
    }
 }

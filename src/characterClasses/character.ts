@@ -1,3 +1,5 @@
+import IUser from '../interfaces/IUser';
+
 abstract class Character {
    readonly name: string;
    readonly hp: number;
@@ -13,7 +15,7 @@ abstract class Character {
       this.abilityName = abilityName;
    }
 
-   attack(target: any): number {
+   attack(target: IUser): number {
       if (target.hp - this.damage <= 0) {
          return 0;
       }
@@ -22,10 +24,6 @@ abstract class Character {
    }
 
    abstract ability(): number;
-
-   relive(): number {
-      return this.hp;
-   }
 }
 
 export default Character;

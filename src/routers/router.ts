@@ -1,16 +1,16 @@
-import express from "express";
+import express from 'express';
 
-import UserController from "../controllers/UserController";
-import ClassController from "../controllers/ClassController";
-import Validation from "../middleware/Validation";
+import { loginUser, registrationUser, updateUser } from '../controllers/UserController';
+import { getAllClasses } from '../controllers/ClassController';
+import { validationRegistration, validationUpdate } from '../middleware/Validation';
 
-import Authentication from "../middleware/Authentication";
+import { authenticationHttp } from '../middleware/Authentication';
 
 const router = express.Router();
 
-router.post("/users/login", UserController.login);
-router.post("/users/new", Validation.registration, UserController.registration);
-router.patch("/users/:id", Validation.update, Authentication.http, UserController.update);
-router.get("/classes", Authentication.http, ClassController.getAll);
+router.post('/users/login', loginUser);
+router.post('/users/new', validationRegistration, registrationUser);
+router.patch('/users/:id', validationUpdate, authenticationHttp, updateUser);
+router.get('/classes', authenticationHttp, getAllClasses);
 
 export default router;
