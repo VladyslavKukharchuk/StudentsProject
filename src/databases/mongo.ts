@@ -1,6 +1,6 @@
 import * as mongoDB from 'mongodb';
 import * as dotenv from 'dotenv';
-import IUser from './interfaces/IUser';
+import IUser from '../interfaces/IUser';
 
 export const collections: { users?: mongoDB.Collection<IUser> } = {};
 

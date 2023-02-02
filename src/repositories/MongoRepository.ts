@@ -1,5 +1,5 @@
 import IUser from '../interfaces/IUser';
-import { collections } from '../mongo';
+import { collections } from '../databases/mongo';
 import IMongoRepository from '../interfaces/IMongoRepository';
 import { ModifyResult } from 'mongodb';
 

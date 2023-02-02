@@ -4,8 +4,10 @@ import CharacterActions from '../character/characterActions';
 import { BadRequest, UnauthorizedError } from '../exceptions/ApiError';
 import IMongoRepository from '../interfaces/IMongoRepository';
 import UsersRepository from '../repositories/UsersRepository';
+import RedisRepository from '../repositories/RedisRepository';
 
 const usersRepository = new UsersRepository();
+const redisRepository = new RedisRepository();
 
 export default class EventService {
    constructor(private repository: IMongoRepository) {}
@@ -29,7 +31,9 @@ export default class EventService {
 
       const ollUsers = await this.repository.getAllUsers();
 
-      return ollUsers;
+      const messages = await redisRepository.getMessages();
+
+      return {ollUsers, messages};
    }
 
 // Действия
@@ -55,6 +59,8 @@ export default class EventService {
       //  Уменьшаем здоровье целевого юзера и сохраняем изменения в сессии.
 
       const user = await this.repository.updateUserHp(targetUserId, targetUserHp);
+
+      await redisRepository.pushMessage(user);
 
       return user;
    }
@@ -94,22 +100,26 @@ export default class EventService {
       //  Добавляем статус целевому юзеру и сохраняем изменения в сессии.
       const updatedUser = await this.repository.updateUserStatuses(targetUserId, targetUser.statuses);
 
+      await redisRepository.pushMessage(updatedUser);
+
       return updatedUser;
    }
 
 // сообщение
    async message(message: string, currentUserId: number) {
-      //  Проверяем может ли юзер писать сообщения
 
       //  получаем сессию текущего юзера из mongo
       const currentUser = await this.repository.getUserById(currentUserId);
 
+      //  Проверяем может ли юзер писать сообщения
       if (currentUser.hp === 0) {
          //  Если нет возвращаем ошибку автору
          throw new BadRequest('You are dead, if you want to write message, first relive!');
       }
 
-      return message;
+      await redisRepository.pushMessage({message: message});
+
+      return {message: message};
    }
 
 // возрождение
@@ -130,6 +140,9 @@ export default class EventService {
       await this.repository.createUser({ _id: currentUserId, username: classData.username, hp: classData.health, statuses: [] });
 
       const user = await this.repository.getUserById(currentUserId);
+
+      await redisRepository.pushMessage(user);
+
       return user;
    }
 }

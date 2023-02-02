@@ -15,7 +15,7 @@ export async function setConnection(ws: WebSocket, req: any) {
    const id = Number(parsedUrl.id);
    const accessToken = req.headers.authorization;
    await eventService.connection(accessToken, id)
-      .then(ollUsers => {
+      .then(({ollUsers, messages}) => {
          // подписываем текущего юзера на вебсокет
          CLIENTS.push({ id, ws });
 
@@ -23,7 +23,9 @@ export async function setConnection(ws: WebSocket, req: any) {
          ws.send(JSON.stringify(ollUsers));
 
          // отправляем кеш последних 10 сообщений из Redis
-
+         if(messages.length > 0){
+            ws.send(JSON.stringify(messages));
+         }
       });
 }
 

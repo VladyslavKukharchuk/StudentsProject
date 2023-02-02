@@ -1,4 +1,4 @@
-import db from '../db';
+import db from '../databases/db';
 import IUsersRepository from '../interfaces/IUsersRepository';
 import IUserClass from '../interfaces/IUserClass';
 import IUserData from '../interfaces/IUserData';

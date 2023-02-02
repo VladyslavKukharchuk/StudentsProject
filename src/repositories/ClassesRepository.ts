@@ -1,4 +1,4 @@
-import db from '../db';
+import db from '../databases/db';
 import IClassesRepository from '../interfaces/IClassesRepository';
 import IClass from '../interfaces/IClass';
 
