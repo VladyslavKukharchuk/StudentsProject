@@ -1,29 +1,25 @@
-import TokenService from '../services/TokenServiсe';
-import { Response, NextFunction } from 'express';
+import { checkAccessToken } from '../services/TokenServiсe';
+import { Response, NextFunction, Request } from 'express';
 
-class Authentication {
-   static http(req: any, res: Response, next: NextFunction) {
-      if (req.method === 'OPTIONS') {
-         next();
-      }
-
-      try {
-         const authorizationHeader = req.headers.authorization;
-         TokenService.checkAccessToken(authorizationHeader);
-
-         next();
-      } catch (e) {
-         return next(e);
-      }
+export function authenticationHttp(req: Request, res: Response, next: NextFunction) {
+   if (req.method === 'OPTIONS') {
+      next();
    }
 
-   static ws(accessToken: any) {
-      try {
-         TokenService.checkAccessToken(accessToken);
-      } catch (e) {
-         throw e;
-      }
+   try {
+      const authorizationHeader = req.headers.authorization;
+      checkAccessToken(authorizationHeader);
+
+      next();
+   } catch (e) {
+      return next(e);
    }
 }
 
-export default Authentication;
+export function authenticationWs(accessToken: string ) {
+   try {
+      return checkAccessToken(accessToken);
+   } catch (e) {
+      throw e;
+   }
+}

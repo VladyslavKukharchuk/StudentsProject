@@ -1,10 +1,12 @@
+import IUserData from '../interfaces/IUserData';
+
 class UserDto {
    id;
    username;
    email;
    class;
 
-   constructor(model: any) {
+   constructor(model: IUserData) {
       this.id = model.id;
       this.username = model.username;
       this.email = model.email;

@@ -11,43 +11,38 @@ import updateValidation from '../validations/update';
 import registrationValidation from '../validations/registration';
 
 
+export function validationRegistration(req: Request, res: Response, next: NextFunction) {
+   const registrationData = req.body;
 
-class Validation {
-   static registration(req: Request, res: Response, next: NextFunction) {
-      const registrationData = req.body;
+   registrationValidation(registrationData);
 
-      registrationValidation(registrationData);
-
-      next();
-   }
-
-   static update(req: Request, res: Response, next: NextFunction) {
-      const updateData = req.body;
-
-      updateValidation(updateData);
-
-      next();
-   }
-
-   static events(data: any) {
-
-      eventTypeValidation(data);
-
-      switch (data.type) {
-         case EventTypeEnum.attack:
-            attackValidation(data);
-            break;
-         case EventTypeEnum.ability:
-            abilityValidation(data);
-            break;
-         case EventTypeEnum.message:
-            messageValidation(data);
-            break;
-         case EventTypeEnum.restore:
-            restoreValidation(data);
-            break;
-      }
-   }
+   next();
 }
 
-export default Validation;
+export function validationUpdate(req: Request, res: Response, next: NextFunction) {
+   const updateData = req.body;
+
+   updateValidation(updateData);
+
+   next();
+}
+
+export function validationEvents(data: any) {
+
+   eventTypeValidation(data);
+
+   switch (data.type) {
+      case EventTypeEnum.attack:
+         attackValidation(data);
+         break;
+      case EventTypeEnum.ability:
+         abilityValidation(data);
+         break;
+      case EventTypeEnum.message:
+         messageValidation(data);
+         break;
+      case EventTypeEnum.restore:
+         restoreValidation(data);
+         break;
+   }
+}

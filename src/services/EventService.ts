@@ -1,138 +1,162 @@
-import User from '../models/User';
-import Authentication from '../middleware/Authentication';
-import UsersRepository from '../repositories/UsersRepository';
+import { authenticationWs } from '../middleware/Authentication';
 import CharacterCreator from '../character/characterCreator';
 import CharacterActions from '../character/characterActions';
-import Character from '../characterClasses/character';
-import { BadRequest } from '../exceptions/ApiError';
+import { BadRequest, UnauthorizedError } from '../exceptions/ApiError';
+import IMongoRepository from '../interfaces/IMongoRepository';
+import UsersRepository from '../repositories/UsersRepository';
+import RedisRepository from '../repositories/RedisRepository';
 
+const usersRepository = new UsersRepository();
+const redisRepository = new RedisRepository();
 
-class EventService {
-   static async connection(accessToken: string, id: number){
-      // проверяем jwt токен.
-      Authentication.ws(accessToken);
+export default class EventService {
+  constructor(private repository: IMongoRepository) {}
 
-      //  получаем класс текущего юзера из postgres
-      const classData = await UsersRepository.getUserClassByID(id);
-      if (!classData){
-         throw new BadRequest("User with this id does not exist")
+  async connection(accessToken: string, id: number) {
+    // проверяем jwt токен.
+    const userData = authenticationWs(accessToken);
+
+    if (userData.id !== id) {
+      throw new UnauthorizedError();
+    }
+
+    //  получаем класс текущего юзера из postgres
+    const classData = await usersRepository.getUserClassById(id);
+    if (!classData) {
+      throw new BadRequest('User with this id does not exist');
+    }
+
+    // создаем сессию в mongodb
+    await this.repository.createUser({ _id: id, username: classData.username, hp: classData.health, statuses: [] });
+
+    const ollUsers = await this.repository.getAllUsers();
+
+    const messages = await redisRepository.getMessages();
+
+    return { ollUsers, messages };
+  }
+
+  // Действия
+  // атака
+  async attack(targetUserId: number, currentUserId: number) {
+    //  получаем сессию текущего юзера из mongo
+    const currentUser = await this.repository.getUserById(currentUserId);
+
+    //  получаем сессию целевого юзера из mongo
+    const targetUser = await this.repository.getUserById(targetUserId);
+
+    if (!targetUser) {
+      throw new BadRequest('Failed to Attack, maybe your target has already left the fight');
+    }
+
+    //  получаем класс текущего юзера из postgres
+    const classData = await usersRepository.getUserClassById(currentUserId);
+    const userClass = CharacterCreator.createCharacter(classData.class_id, classData);
+
+    //  проверяем действующие статусы на целевом юзере и возможно ли провести атаку.
+    const targetUserHp = CharacterActions.useAttack(userClass, targetUser, currentUser) as number;
+    //  Если нет возвращаем ошибку автору
+    //  Уменьшаем здоровье целевого юзера и сохраняем изменения в сессии.
+
+    const updatedUser = await this.repository.updateUserHp(targetUserId, targetUserHp);
+
+    await redisRepository.pushMessage({
+      type: 'updatedUser',
+      userData: updatedUser,
+    });
+
+    return updatedUser;
+  }
+
+  // применение способности
+  async ability(targetUserId: number, currentUserId: number) {
+    //  получаем сессию текущего юзера из mongo
+    const currentUser = await this.repository.getUserById(currentUserId);
+
+    //  получаем сессию целевого юзера из mongo
+    const targetUser = await this.repository.getUserById(targetUserId);
+
+    if (!targetUser) {
+      throw new BadRequest('Ability failed, your target may have already left the battle');
+    }
+
+    //  получаем класс текущего юзера из postgres
+    const classData = await usersRepository.getUserClassById(currentUserId);
+    const userClass = CharacterCreator.createCharacter(classData.class_id, classData);
+
+    const targetUserStatus = CharacterActions.useAbility(userClass, targetUser, currentUser) as number;
+
+    const removeEffectOfAbility = async (userID: number, targetStatus: number) => {
+      const user = await this.repository.getUserById(userID);
+      if (user) {
+        const statusIndex = user.statuses.findIndex((status: number) => status === targetStatus);
+        user.statuses.splice(statusIndex, 1);
+        await this.repository.updateUserStatuses(userID, user.statuses);
       }
+    };
 
-      // создаем сессию в mongodb{
-      //  "_id": number;
-      //  "username": string;
-      //  "hp": number;
-      //  "statuses": number[];
-      // }
-      await User.create({ _id: id, username: classData.username, hp: classData.health });
+    setTimeout(removeEffectOfAbility, 30 * 1000, targetUserId, targetUserStatus);
 
-      const ollUsers = await User.find({});
+    targetUser.statuses.push(targetUserStatus);
+    //  Добавляем статус целевому юзеру и сохраняем изменения в сессии.
+    const updatedUser = await this.repository.updateUserStatuses(targetUserId, targetUser.statuses);
 
-      return {ollUsers};
-   }
+    await redisRepository.pushMessage({
+      type: 'updatedUser',
+      userData: updatedUser,
+    });
 
-   // Действия
-   // атака
-   static async attack(targetUserId: number, currentUserId: number) {
-      //  получаем сессию текущего юзера из mongo
-      const currentUser = await User.findById(currentUserId);
+    return updatedUser;
+  }
 
-      //  получаем сессию целевого юзера из mongo
-      const targetUser = await User.findById(targetUserId);
-      if(!targetUser){
-         throw new BadRequest("Failed to Attack, maybe your target has already left the fight")
-      }
+  // сообщение
+  async message(message: string, currentUserId: number) {
+    //  получаем сессию текущего юзера из mongo
+    const currentUser = await this.repository.getUserById(currentUserId);
 
-      //  получаем класс текущего юзера из postgres
-      const classData = await UsersRepository.getUserClassByID(currentUserId);
-      const userClass = CharacterCreator.createCharacter(classData.class_id, classData);
-
-      //  проверяем действующие статусы на целевом юзере и возможно ли провести атаку.
-      const targetUserHp = CharacterActions.useAttack(userClass, targetUser, currentUser);
+    //  Проверяем может ли юзер писать сообщения
+    if (currentUser.hp === 0) {
       //  Если нет возвращаем ошибку автору
-      //  Уменьшаем здоровье целевого юзера и сохраняем изменения в сессии.
-      // @ts-ignore
-      targetUser.hp = targetUserHp;
-      // @ts-ignore
-      await targetUser.save()
+      throw new BadRequest('You are dead, if you want to write message, first relive!');
+    }
 
-      return targetUser;
-   }
+    await redisRepository.pushMessage({
+      type: 'message',
+      message: message,
+    });
 
-   // применение способности
-   static async ability(targetUserId: number, currentUserId: number) {
+    return message;
+  }
 
-      //  получаем сессию текущего юзера из mongo
-      const currentUser = await User.findById(currentUserId);
+  // возрождение
+  async restore(currentUserId: number) {
+    //  Проверяем нужно ли юзеру возрождение
+    const currentUser = await this.repository.getUserById(currentUserId);
 
-      //  получаем сессию целевого юзера из mongo
-      const targetUser = await User.findById(targetUserId);
-      if(!targetUser){
-         throw new BadRequest("Ability failed, your target may have already left the battle")
-      }
+    if (currentUser.hp !== 0) {
+      //  Если нет возвращаем ошибку автору
+      throw new BadRequest('Your character is still alive, you can continue the battle!');
+    }
 
-      //  получаем класс текущего юзера из postgres
-      const classData = await UsersRepository.getUserClassByID(currentUserId);
-      const userClass = CharacterCreator.createCharacter(classData.class_id, classData);
+    //  получаем класс текущего юзера из postgres
+    const classData = await usersRepository.getUserClassById(currentUserId);
 
-      const targetUserStatus = CharacterActions.useAbility(userClass, targetUser, currentUser);
-      //  Добавляем статус целевому юзеру и сохраняем изменения в сессии.
-      // @ts-ignore
-      targetUser.statuses.push(targetUserStatus)
-      // @ts-ignore
-      await targetUser.save();
+    await this.repository.deletedUserById(currentUserId);
 
-      async function removeEffectOfAbility(userID: any, targetStatus: number){
-         const user = await User.findById(userID);
-         if(user){
-            let statusIndex = user.statuses.findIndex((status: number) => status === targetStatus);
-            user.statuses.splice(statusIndex, 1);
-            await user.save();
-         }
-      }
+    await this.repository.createUser({
+      _id: currentUserId,
+      username: classData.username,
+      hp: classData.health,
+      statuses: [],
+    });
 
-      setTimeout(removeEffectOfAbility, 30 * 1000, targetUserId, targetUserStatus);
+    const updatedUser = await this.repository.getUserById(currentUserId);
 
-      return targetUser;
-   }
+    await redisRepository.pushMessage({
+      type: 'updatedUser',
+      userData: updatedUser,
+    });
 
-   // сообщение
-   static async message(message: string, currentUserId: number) {
-      //  Проверяем может ли юзер писать сообщения
-      const currentUser = await User.findById(currentUserId);
-      // @ts-ignore
-      if(currentUser.hp === 0){
-         //  Если нет возвращаем ошибку автору
-         throw new BadRequest("You are dead, if you want to write message, first relive!");
-      }
-
-      return message;
-   }
-
-   // возрождение
-   static async restore(currentUserId: number) {
-      //  Проверяем нужно ли юзеру возрождение
-      const currentUser = await User.findById(currentUserId);
-
-      // @ts-ignore
-      if(currentUser.hp !== 0){
-         //  Если нет возвращаем ошибку автору
-         throw new BadRequest("Your character is still alive, you can continue the battle!");
-      }
-
-      //  получаем класс текущего юзера из postgres
-      const classData = await UsersRepository.getUserClassByID(currentUserId);
-      const userClass = CharacterCreator.createCharacter(classData.class_id, classData);
-
-      const currentUserHp = CharacterActions.useRelive(userClass, currentUser)
-      //  Пересоздаем сессию в mongo
-      // @ts-ignore
-      currentUser.hp = currentUserHp;
-      // @ts-ignore
-      currentUser.save();
-
-      return currentUser;
-   }
+    return updatedUser;
+  }
 }
-
-export default EventService;

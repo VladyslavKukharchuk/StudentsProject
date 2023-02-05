@@ -2,9 +2,10 @@
   "compilerOptions": {
     "module": "commonjs",
     "esModuleInterop": true,
-    "target": "ES2018",
+    "target": "ES6",
     "lib": ["ES6"],
     "strict": true,
+    "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
     "removeComments": true,
