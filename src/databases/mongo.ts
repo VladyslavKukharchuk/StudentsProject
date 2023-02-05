@@ -1,13 +1,11 @@
 import * as mongoDB from 'mongodb';
-import * as dotenv from 'dotenv';
 import IUser from '../interfaces/IUser';
 
 export const collections: { users?: mongoDB.Collection<IUser> } = {};
 
 export async function connectToDatabase() {
-   dotenv.config();
 
-   const client: mongoDB.MongoClient = new mongoDB.MongoClient(process.env.MONGODB_DB_URL!);
+   const client: mongoDB.MongoClient = new mongoDB.MongoClient(`mongodb://${process.env.MONGODB_DB_HOST}:${process.env.MONGODB_DB_PORT}/`);
 
    await client.connect();
 
@@ -29,7 +27,7 @@ async function applySchemaValidation(db: mongoDB.Db) {
          properties: {
             _id: {
                bsonType: 'number',
-               description: '\'_id\' is required and is a string',
+               description: '\'_id\' is required and is a number',
             },
             username: {
                bsonType: 'string',
