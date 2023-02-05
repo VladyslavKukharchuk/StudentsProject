@@ -12,6 +12,7 @@ const redis = require('redis');
 const redisClient = redis.createClient(process.env.REDIS_DB_PORT, process.env.REDIS_DB_HOST);
 
 import MongoRepository from './repositories/MongoRepository';
+
 const mongoRepository = new MongoRepository();
 
 const app = express();
@@ -60,13 +61,7 @@ process.on('uncaughtException', (err) => {
   });
 
   httpServer.close(async () => {
-    console.log('Http server closed.');
-    await mongoRepository.deleteAllUsers();
-    await redisClient.quit();
-    db.end(() => {
-      console.log('PG connections closed.');
-      process.exit(1);
-    });
+    await closeGracefully(1);
   });
 
   setTimeout(() => {
@@ -85,13 +80,7 @@ process.on('unhandledRejection', (reason, promise) => {
   });
 
   httpServer.close(async () => {
-    console.log('Http server closed.');
-    await mongoRepository.deleteAllUsers();
-    await redisClient.quit();
-    db.end(() => {
-      console.log('PG connections closed.');
-      process.exit(1);
-    });
+    await closeGracefully(1);
   });
 
   setTimeout(() => {
@@ -101,30 +90,28 @@ process.on('unhandledRejection', (reason, promise) => {
 
 //SIGINT
 process.on('SIGINT', () => {
-  console.info('SIGTERM signal received.');
+  console.info(`SIGINT signal received.`);
   httpServer.close(async () => {
-    console.log('Http server closed.');
-    await mongoRepository.deleteAllUsers();
-    await redisClient.quit();
-    db.end(() => {
-      console.log('PG connections closed.');
-      process.exit(0);
-    });
+    await closeGracefully(0);
   });
 });
 
 //SIGTERM
 process.on('SIGTERM', () => {
-  console.info('SIGTERM signal received.');
+  console.info(`SIGTERM signal received.`);
   httpServer.close(async () => {
-    console.log('Http server closed.');
-    await mongoRepository.deleteAllUsers();
-    await redisClient.quit();
-    db.end(() => {
-      console.log('PG connections closed.');
-      process.exit(0);
-    });
+    await closeGracefully(0);
   });
 });
+
+async function closeGracefully(code: number) {
+  console.log('Http server closed.');
+  await mongoRepository.deleteAllUsers();
+  await redisClient.quit();
+  db.end(() => {
+    console.log('PG connections closed.');
+    process.exit(code);
+  });
+}
 
 export { httpServer, redisClient };
