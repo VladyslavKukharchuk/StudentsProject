@@ -5,9 +5,9 @@
   "main": "build/server.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node ./build/app.js",
-    "dev": "nodemon -L -e ts --exec \"npm run build && npm start\"",
-    "build": "tsc",
+    "start": "npm run build && node build/app.js",
+    "build": "rimraf ./build && npx tsc",
+    "dev": "npx nodemon",
     "migrate": "node-pg-migrate",
     "migrate:up": "node-pg-migrate up",
     "migrate:down": "node-pg-migrate down",

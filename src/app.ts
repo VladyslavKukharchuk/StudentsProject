@@ -11,13 +11,6 @@ import { connectToDatabase } from './databases/mongo';
 const redis = require('redis');
 const redisClient = redis.createClient(process.env.REDIS_DB_PORT, process.env.REDIS_DB_HOST);
 
-console.log(`REDIS_DB_PORT`);
-console.log(process.env.REDIS_DB_HOST);
-console.log(`MONGODB_DB_HOST`);
-console.log(process.env.MONGODB_DB_HOST);
-console.log(`POSTGRES_DB_HOST`);
-console.log(process.env.POSTGRES_DB_HOST);
-
 import MongoRepository from './repositories/MongoRepository';
 const mongoRepository = new MongoRepository();
 
