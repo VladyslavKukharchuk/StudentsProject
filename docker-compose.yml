@@ -3,7 +3,7 @@ version: '3.9'
 services:
   postgres:
     container_name: postgres
-    image: postgres:15.1
+    image: postgres:15.1-alpine
     environment:
       POSTGRES_DB: ${POSTGRES_DB_NAME}
       POSTGRES_USER: ${POSTGRES_DB_USER}
@@ -16,7 +16,7 @@ services:
 
   mongo:
     container_name: mongo
-    image: mongo:6.0.4
+    image: mongo:6.0.4-jammy
     volumes:
       - mongo-data:/data/db
     ports:
